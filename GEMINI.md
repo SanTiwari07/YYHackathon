@@ -31,7 +31,7 @@ Antigravity 2.0 is configured with the following focused skill architecture:
 When generating slides, proposals, architecture diagrams, or code:
 
 1. **Design System Source of Truth**:
-   - Always adhere to [`DESIGN_SYSTEM.md`](./DESIGN_SYSTEM.md).
+   - Always adhere to [`docs/DESIGN_SYSTEM.md`](./docs/DESIGN_SYSTEM.md).
    - Core Brand Tokens:
      - Schneider QuartzDS Green: `--se-primary` (`#3DCD58`), hover: `#32AD3C`
      - Yuva Yodha Deep Forest: `--yy-deep-forest` (`#024230`)
@@ -41,10 +41,10 @@ When generating slides, proposals, architecture diagrams, or code:
      - Slate Neutral: `#8C9DA8`
    - Physics-grounded industrial metaphors: telemetry indicators, VFD status, Modbus registers, water level bars.
 2. **Product Truth & Claim Integrity**:
-   - Refer to [`06_PRODUCT_TRUTH.md`](./06_PRODUCT_TRUTH.md) and [`08_CLAIM_LEDGER.md`](./08_CLAIM_LEDGER.md).
+   - Refer to [`docs/06_PRODUCT_TRUTH.md`](./docs/06_PRODUCT_TRUTH.md) and [`docs/08_CLAIM_LEDGER.md`](./docs/08_CLAIM_LEDGER.md).
    - **Zero Hallucination Mandate**: Never invent metrics, savings percentages, or sensor specifications. All calculations must align with FAO-56 Penman-Monteith physics and PM-KUSUM guidelines.
 3. **Asset Registry**:
-   - Reference [`ASSET_LEDGER.md`](./ASSET_LEDGER.md) and [`10_IMAGE_ASSET_RESEARCH.md`](./10_IMAGE_ASSET_RESEARCH.md) for approved images and diagrams in `./assets/`.
+   - Reference [`assets/ASSET_LEDGER.md`](./assets/ASSET_LEDGER.md) and [`assets/10_IMAGE_ASSET_RESEARCH.md`](./assets/10_IMAGE_ASSET_RESEARCH.md) for approved images and diagrams in `./assets/`.
 
 ---
 

@@ -1,7 +1,7 @@
 # AgroStruxure Design System & Deck Generation Rules
 
 ## Core Brand & Token Guidelines
-- Always load and reference `DESIGN_SYSTEM.md` at project root.
+- Always load and reference `docs/DESIGN_SYSTEM.md`.
 - Primary Brand Color: `#3DCD58` (Schneider Electric "Life Is On" Green)
 - Secondary Brand Colors: `#024230` (Yuva Yodha Deep Forest), `#0D8752` (Emerald), `#FFCE00` (Solar Gold)
 - Dark Theme Backgrounds: `#0F1416` (industrial slate background), `#1A2226` (card surface), `#242E33` (elevated panels)
