@@ -167,8 +167,8 @@ D:\Research Work\YuvaYodhaHackathon Research\
 │   ├── 03_TECHNICAL_DEBT.md           (Vulnerability analysis of old work)
 │   └── 04_MIGRATION_OPPORTUNITIES.md  (Refactoring blueprint into AgroStruxure)
 ├── 07_SOLUTION_DESIGN/
-│   ├── 01_SOLUTION_CONCEPTS.md        (Evaluation of 10 candidate concepts)
-│   ├── 02_SOLUTION_SYNTHESIS.md       (Multi-criteria decision analysis matrix)
+│   ├── 01_SOLUTION_CONCEPTS.md        (AgroStruxure flagship architecture & evaluation)
+│   ├── 02_SOLUTION_SYNTHESIS.md       (Multi-criteria evaluation matrix & trade-offs)
 │   ├── 03_PROPOSED_SOLUTION.md        (AgroStruxure vision & value proposition)
 │   ├── 04_SYSTEM_ARCHITECTURE.md      (Multi-tier architecture & 3 flow diagrams)
 │   ├── 05_DATA_ARCHITECTURE.md        (ER schemas, Modbus maps & MQTT topics)

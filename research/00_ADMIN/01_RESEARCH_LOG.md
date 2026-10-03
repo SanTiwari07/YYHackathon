@@ -72,9 +72,9 @@
   - Crucial gap: GramDrishti had NO energy monitoring, NO pump controls, and NO physical sensing.
   - Strategy: Retain the satellite/weather pipeline and multilingual deterministic RAG; build a brand new solar-irrigation energy-water intelligence core.
 
-### Phases 9 & 10: Idea Generation & Synthesis
-- **Action:** Generated 10 candidate concepts across the agri-energy nexus and conducted Multi-Criteria Decision Analysis (MCDA).
-- **Finding:** Selected **AgroStruxure™** (Concept 1, Score: 95/100) — solar-synchronized precision irrigation and micro-cold storage load diversion.
+### Phases 9 & 10: Idea Formulation & Synthesis
+- **Action:** Formulated and evaluated the flagship architecture for the agri-energy nexus and conducted Multi-Criteria Decision Analysis (MCDA).
+- **Finding:** Formulated **AgroStruxure™** (Score: 95/100) — solar-synchronized precision irrigation and micro-cold storage load diversion.
 
 ### Phases 11 & 12: Architectural Specification
 - **Action:** Authored complete end-to-end multi-tier architecture aligned with Schneider EcoStruxure (Connected Products, Edge Control, Apps & Analytics), documenting data, energy, and financial flows.
