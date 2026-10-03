@@ -21,6 +21,21 @@ Welcome to the central research and system architecture repository for the 2026 
 
 ---
 
+## 🏆 Official Hackathon Deliverables (AgroStruxure™ Rebuild)
+
+* **Official PowerPoint Presentation (16:9 Widescreen):** [`AgroStruxure_YuvaYodha_2026_Final.pptx`](./AgroStruxure_YuvaYodha_2026_Final.pptx) *(4.60 MB)*
+* **Official PDF Presentation (16:9 Print-Ready):** [`AgroStruxure_YuvaYodha_2026_Final.pdf`](./AgroStruxure_YuvaYodha_2026_Final.pdf) *(3.97 MB)*
+* **Interactive Responsive Deck Viewer:** [`presentation.html`](./presentation.html)
+* **Master Presentation Hub (`presentation/`):**
+  * `presentation/source/index.html` — Zero-dependency standalone HTML pitch deck
+  * `presentation/qa/slide_01.png` to `slide_10.png` — Full-resolution 1920×1080 visual proofs
+  * `presentation/VISUAL_VALIDATION_REPORT.md` — 100% Quality gate clearance report
+  * `presentation/STORYBOARD.md` — 10-slide architectural narrative and layout storyboard
+  * `presentation/CURRENT_DECK_AUDIT.md` — 15-flaw diagnostic matrix of the previous deck
+  * `presentation/generate_deck.py` — Autonomous multi-engine pipeline (`frontend-slides` + `pptx-official` + `pdf-official`)
+
+---
+
 ## Directory Navigation & Research Artifacts
 
 ```

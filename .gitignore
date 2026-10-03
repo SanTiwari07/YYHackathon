@@ -30,6 +30,8 @@ yarn-error.log*
 # Operating System & IDE
 .DS_Store
 Thumbs.db
+~$*
+*.tmp
 .idea/
 .vscode/
 *.suo
