@@ -54,13 +54,14 @@
   - Marginal farmers (<1.0 ha) constitute 68.5% of holdings (avg. size: 0.38 ha).
   - National average operational landholding: **1.08 hectares**.
 
-### 6. ICAR – Central Institute of Post-Harvest Engineering & Technology (CIPHET)
-* **Title:** *Assessment of Quantitative Harvest and Post-Harvest Losses of Major Crops and Commodities in India*
-* **URL:** `https://ciphet.icar.gov.in/`
-* **Geographic Scope:** 107 districts across 14 agro-climatic zones
+### 6. NABARD Consultancy Services (NABCONS) & Ministry of Food Processing Industries (MoFPI)
+* **Title:** *Study to Determine Post-Harvest Losses of Agri Produce in India (2022)*
+* **URL:** `https://www.mofpi.gov.in/`
+* **Publication Date:** 2022 (Reference Period: 2020–2022, 54 commodities across 15 agro-climatic zones)
 * **Key Statistics:**
-  - Cumulative national post-harvest loss: **₹92,651 Crore annually**.
-  - Perishable losses: Guava (15.88%), Tomato (12.44%), Onion (8.20%), Apple (10.39%), Potato (7.32%).
+  - Cumulative national post-harvest economic loss: **₹1,52,790 Crore (~₹1.53 Lakh Crore)**.
+  - Tomato post-harvest losses: **11.61% total**, with **8.37% occurring at the farm-gate and harvesting stage**.
+  - Supersedes ICAR-CIPHET (2015) baseline (which was ₹92,651 Crore). Farm-gate pre-cooling directly mitigates this 8.37% field loss.
 
 ### 7. Ministry of New and Renewable Energy (MNRE)
 * **Title:** *Pradhan Mantri Kisan Urja Suraksha evam Utthaan Mahabhiyan (PM-KUSUM) Guidelines & Extensions*
@@ -68,6 +69,7 @@
 * **Publication Date:** Updated 2024 (Extended through March 31, 2026)
 * **Key Statistics:**
   - Target: **34,800 MW** solar capacity across Component A, B (1.4M standalone pumps), and C (3.5M solarized pumps).
+  - Component B reality: Over **10.9 lakh standalone pumps installed** (dominated by Maharashtra, Rajasthan, MP).
   - Subsidy structure: 60% capital subsidy (30% Central + 30% State), 30% bank loan, 10% farmer margin.
   - Mandate: Remote Monitoring System (RMS) telemetry integration required for all deployed drives.
 
@@ -81,15 +83,28 @@
 * **Publication:** FAO, Rome, 1998 (Standard International Reference)
 * **Key Contribution:** Governing mathematical formulation for Penman-Monteith Reference Evapotranspiration ($ET_0$) and crop coefficient ($K_c$) dynamics.
 
-### 9. IEEE Transactions on Industry Applications
-* **Title:** *Optimal Energy Management of Solar Water Pumping Systems with Battery Storage and Demand-Side Load Shifting*
-* **Publication:** IEEE Xplore, 2022
-* **Key Findings:** Variable speed drives operating under dynamic MPPT reduce motor thermal degradation by 40% and improve solar capacity utilization by 65% when coupled with thermal energy buffers.
+### 9. Energy Policy (Elsevier) — Empirical Solar Rebound Evidence
+* **Title:** *The impact of solar water pumps on energy-water-food nexus: Evidence from Rajasthan, India*
+* **Author:** Gupta, E. (2019)
+* **Publication:** *Energy Policy*, Volume 129, Pages 598–609. DOI: 10.1016/j.enpol.2019.02.008
+* **Key Findings:** Rigorous empirical econometric measurement reveals that adoption of solar water pumps led to a **16% to 39% increase in groundwater extraction** in water-scarce regions due to zero marginal cost of daytime solar pumping. Confirms Jevons paradox in Indian solar irrigation and proves why volumetric entitlement caps are mandatory.
 
-### 10. ACM / IEEE Transactions on Embedded Computing Systems
-* **Title:** *TinyML in Agriculture: Quantized Neural Networks for In-Situ Soil Water Tension Forecasting on Microcontrollers*
-* **Publication:** 2023
-* **Key Findings:** Quantized 8-bit recurrent neural network running on ESP32-S3 consumes <15 milliwatts while predicting 24-hour soil water depletion with $R^2 > 0.91$.
+### 10. International Water Management Institute (IWMI-Tata) — SPaRC & Dhundi Precedent
+* **Title:** *Solar Power as a Remunerative Crop (SPaRC): Empowering Farmers to Harvest Solar Energy as a Cash Crop*
+* **Authors:** Shah, T., Durga, N., Verma, S., & Rathod, R. (2016)
+* **Publication:** *IWMI-Tata Water Policy Research Highlight*, Issue 10; and *Economic & Political Weekly* (2017).
+* **Key Findings:** Proven field demonstration in Dhundi, Gujarat showing that offering farmers a remunerative alternative for surplus solar energy reduces groundwater pumping and incentivizes water conservation. AgroStruxure translates this mechanism to off-grid Component B farms by converting conserved water into cold-storage capacity.
+
+### 11. USDA Agricultural Research Service — Chilling Sensitivity Handbook
+* **Title:** *The Commercial Storage of Fruits, Vegetables, and Florist and Nursery Stocks (Agriculture Handbook 66)*
+* **Authors:** Gross, K.C., Wang, C.Y., Saltveit, M. (2016)
+* **Key Standards:** Defines critical chilling injury thresholds: Mature-green tomatoes suffer irreversible chilling damage (failure to ripen, pitting, breakdown) below **10°C–13°C**; Cucumbers below **10°C–12°C**; Peppers below **7°C–10°C**. Confirms that a flat 4°C setpoint destroys solanaceous produce and validates AgroStruxure's crop-specific 12°C tomato setpoint.
+
+### 12. Schneider Electric Industrial Automation Technical Documentation
+* **Manuals:**
+  - *Altivar Machine ATV320 Modbus Serial Link Manual* (Doc Ref: `NVE41308`)
+  - *Altivar Machine ATV320 Programming Manual* (Doc Ref: `NVE41295`)
+* **Key Standards:** Specifies standard CiA402 drive profile registers: Command Word `8501` (`CMD`), Speed Target `8502` (`LFRd`), Drive Status `3201` (`ETA`), Output Frequency `3202` (`RFRd`), Motor Current `3204` (`LCR`), Mains/DC Bus `3207` (`ULN`), Thermal State `3208` (`THD`). Defines strict prohibition against switching downstream electromechanical contactors on live PWM drive outputs.
 
 ---
 

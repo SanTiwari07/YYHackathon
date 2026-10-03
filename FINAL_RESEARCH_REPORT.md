@@ -87,23 +87,25 @@ An exhaustive technical audit of existing assets in `My Old Work` was conducted 
 ```
 
 1. **Data Flow:** FDR Soil Moisture Probes $\rightarrow$ LoRa IN865 $\rightarrow$ Edge Gateway $\rightarrow$ RS485 Modbus $\leftrightarrow$ Altivar ATV320 $\rightarrow$ Cellular 4G/MQTT $\rightarrow$ Cloud Digital Twin $\rightarrow$ Vernacular Voice WhatsApp Advisory.
-2. **Energy Flow:** PM-KUSUM 5kW Solar Array $\rightarrow$ DC Bus (540V) $\rightarrow$ Altivar VFD $\rightarrow$ TeSys Contactor Interlock $\rightarrow$ **Morning:** Submersible Pump Motor ($f$ modulated by MPPT) $\rightarrow$ **Afternoon:** Cold Room Compressor (diverting 3.8 kW to PCM thermal ice bank).
-3. **Financial Flow:** Central/State PM-KUSUM Subsidy (60%) + AIF Cold Room Loan (30%) + Farmer Equity (10%) $\rightarrow$ Deployed AgroStruxure $\rightarrow$ Saves ₹8,000/yr in repairs/diesel + Saves ₹35,000 in spoiled vegetables $\rightarrow$ Loan repaid in <14 months $\rightarrow$ Sustainable household prosperity.
+2. **Energy Flow:** PM-KUSUM 4.8 kWp Solar Array $\rightarrow$ DC Bus (350–600V DC) + Type-2 SPD $\rightarrow$ Schneider TeSys D Changeover Contactors (Upstream DC switching with 5s dead-band) $\rightarrow$ **Morning (Pos 1):** Altivar Solar ATV320 VFD $\to$ 5 HP Submersible Pump (pulsed drip strictly metered against seasonal entitlement) $\rightarrow$ **Afternoon (Pos 2):** Dedicated DC Inverter Compressor Controller $\to$ 2 MT PCM Farm Pre-Cooler (12 °C crop-safe pull-down, utilizing 3.43 kW average).
+3. **Financial Flow:** 4-farm cluster shares one 2 MT pre-cooler $\to$ Saves ₹91,000 in avoided PV capex $\to$ Net capex of ₹2,00,850 after 35% MIDH/AIF subsidy (₹50,212/farm) $\to$ Generates ₹25,332/farm/year net benefit $\to$ Fully pays back in **2.0 years (2 crop seasons)**.
 
 ---
 
-## 5. QUANTIFIED IMPACT & UNIT ECONOMICS
+## 5. QUANTIFIED IMPACT & UNIT ECONOMICS (SINGLE SOURCE OF TRUTH)
+
+*All figures derived from `impact_model.py` for 1 ha tomato, Nashik (2 cycles/yr, 5 HP pump, 4.8 kWp array):*
 
 | Performance Metric | Status Quo Baseline | AgroStruxure Outcome | Net Benefit Achieved |
 |---|:---:|:---:|:---:|
-| **Groundwater Extraction** | $14,062\text{ m}^3/\text{ha}$ | $5,000\text{ m}^3/\text{ha}$ | **42% – 64% Water Conserved** |
-| **Grid Electricity Displaced** | $3,965\text{ kWh/ha}$ | $1,410\text{ kWh/ha}$ | **2,555 kWh / ha / season** |
-| **Surplus Solar Diverted** | 0 kWh (Array idle) | 4,200 kWh / year | **100% Daytime PV Utilization** |
-| **Post-Harvest Spoilage** | 18% loss at farm gate | <4% loss in cold room | **2.8 Metric Tonnes Saved / ha** |
-| **Carbon Abatement** | $3,250\text{ kg CO}_2\text{e/ha}$ | $350\text{ kg CO}_2\text{e/ha}$ | **2.9 Tonnes CO₂e Abated / yr** |
-| **BOM Capex (Volume SMT)** | ₹25,000+ (Competitors) | **₹3,480** | **Affordable to 86% Smallholders** |
-| **Annual Net Income Gain** | Baseline ₹75,000 / ha | ₹1,47,450 / ha | **+₹72,450 Net Profit / ha / yr** |
-| **Capital Payback Period** | 3 to 5 Years | **<18 Operating Days** | **Paid back in single crop cycle** |
+| **Groundwater Extraction** | $17,000\text{ m}^3/\text{ha/yr}$ (Flood: 850mm/s) | $10,000\text{ m}^3/\text{ha/yr}$ (Drip: 500mm/s) | **41.2% Conserved ($7,000\text{ m}^3/\text{ha/yr}$)** |
+| **Pumping Energy Freed** | $4,118\text{ kWh/ha/yr}$ | $2,422\text{ kWh/ha/yr}$ | **1,696 kWh / ha / year freed** |
+| **Surplus Solar Utilized** | $4,137\text{ kWh/yr}$ idle (63% wasted) | $3,187\text{ kWh/yr}$ put to work | **77% Surplus Put to Work** (951 kWh residual) |
+| **Post-Harvest Spoilage** | 8.37% farm loss ($2.51\text{ t/yr}$) | 4.00% residual loss ($1.20\text{ t/yr}$) | **1.31 Tonnes Produce Saved / ha / yr** |
+| **Carbon Abatement** | Baseline diesel genset/loss | Solar cooling + saved food | **2.94 Tonnes CO₂e Abated / ha / yr** |
+| **Controller BOM (Scale)** | N/A (Disjointed products) | Complete industrial BOM | **₹7,540 (1,000-unit scale)** |
+| **Farmer Annual Net Gain** | Baseline farm-gate sales | Spoilage saved + distress avoided | **+₹25,332 Net Gain / ha / yr** |
+| **Capital Payback Period** | 3 to 5 Years (Commercial cold) | Tier A: 4-Farm Shared Pre-Cooler | **2.0 Years (2 seasons)**; Tier B Hub: 4.2 Years |
 
 ---
 

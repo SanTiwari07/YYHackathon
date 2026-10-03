@@ -1,126 +1,135 @@
-# 04 End-to-End System Architecture & Flow Topologies
+# 04 End-to-End System Architecture
 
-**Document Code:** ARCH-SYS-04  
-**Framework Alignment:** Schneider Electric EcoStruxure™ 3-Tier Industrial Architecture  
+**Document Code:** ARCH-SPEC-04  
+**Evaluation Pillar Target:** Solution Architecture & Schneider Integration (30% Judging Weight)  
+**Hardware Topology:** Upstream DC Changeover with Mechanical/Electrical Interlock & 5-Second Dead-Band  
 
 ---
 
-## 1. High-Level Architecture Diagram
-
-AgroStruxure organizes all hardware, edge devices, network protocols, and software services into a unified, modular architecture:
+## 1. System Architecture Diagram
 
 ```mermaid
-graph TB
-    subgraph "Tier 3: Apps, Analytics & Services (Cloud / Enterprise)"
-        FPO_Dash[FPO Fleet Management & Carbon Ledger]
-        DISCOM_Port[DISCOM Feeder Telemetry & RMS Portal]
-        Agro_Twin[Agronomic & Hydrological Digital Twin]
-        Det_RAG[Deterministic Agentic RAG Engine]
-        Farmer_App[Smallholder Vernacular Web & Mobile UI]
+flowchart TD
+    subgraph Tier3["Tier 3: Apps, Analytics & Services (EcoStruxure Cloud)"]
+        Agro_Twin[Agronomic Digital Twin & Irrigation Scheduler]
+        Det_RAG[Deterministic Vernacular Advisory / Copilot]
+        FPO_Dash[FPO Entitlement & Credit Trading Ledger]
+        DISCOM_Port[PM-KUSUM RMS & Aquifer Monitoring Portal]
     end
 
-    subgraph "Tier 2: Edge Control & Automation (Pump Shed / Field Hub)"
-        Edge_MCU[AgroStruxure Industrial Edge Gateway\nESP32-S3 Dual-Core 240MHz]
-        TinyML_Engine[Embedded TinyML Inference Engine\nSoil Depletion & Motor Health]
-        Modbus_Master[RS485 Modbus RTU Master Driver]
-        Load_Router[Dynamic Microgrid Power Routing Logic]
-        Offline_DB[(Local SQLite / Flash Circular FIFO)]
+    subgraph Tier2["Tier 2: Edge Control (EcoStruxure Edge)"]
+        Edge_MCU[AgroStruxure Industrial Gateway\nESP32-S3 Dual-Core 240MHz\nFreeRTOS Preemptive Tasks]
+        Modbus_Master[Modbus RTU Master Engine\nCiA402 Drive Profile (NVE41308)]
+        Load_Router[Deterministic Load Switcher\n5s Dead-Band Safety Sequencer]
+        Offline_DB[Circular Flash Storage\n90-Day Offline Buffer]
+        Entitle_Eng[3-Layer Entitlement Engine\nCGWB / Atal Bhujal Quota]
     end
 
-    subgraph "Tier 1: Connected Products (Sensors, Drives & Actuators)"
-        PV_Array[PM-KUSUM Solar PV Array 3kW-5kW]
-        Altivar_VFD[Schneider Altivar Solar ATV320 VFD]
-        TeSys_Switch[Schneider TeSys Contactor Changeover]
-        Sub_Pump[3-Phase Submersible Pump Motor 3HP/5HP]
-        Cold_Comp[Micro-Cold Room Thermal PCM Compressor]
-        Soil_Node[FDR Dual-Depth Capacitive Soil Probe\nLoRa 865 MHz IN865]
-        Pulse_Valve[9V-12V DC Latching Solenoid Valve]
+    subgraph Tier1_Switch["Tier 1: Upstream Industrial Switchgear (DC Bus)"]
+        PV_Array[PM-KUSUM PV Array\n4.8 kWp · 350V - 600V DC]
+        DC_SPD[DC Isolator + Type-2 SPD]
+        TeSys_Switch[Schneider TeSys D Changeover Contactors ×2\nMechanically & Electrically Interlocked\nBreak-Before-Make · Upstream of all Drives]
     end
 
-    Soil_Node -->|LoRa IN865 Wireless| Edge_MCU
-    Edge_MCU -->|100ms Pulse Signal| Pulse_Valve
+    subgraph Tier1_Drives["Tier 1: Dedicated Motor Controllers"]
+        Altivar_VFD[Schneider Altivar Solar ATV320 VFD\nRegisters: 8501 CMD, 8502 LFRd, 3201-3208\nEmbedded MPPT & Pump Protection]
+        Cold_Comp[DC Brushless Compressor Inverter\nSoft-Start · Anti-Short Cycle Dwell]
+    end
+
+    subgraph Tier1_Loads["Tier 1: Controlled Industrial Loads"]
+        Sub_Pump[5 HP Submersible Pump\nBorewell Pulsed Drip Irrigation]
+        PCM_Cooler[2 MT Farm-Gate Pre-Cooler\nPCM Thermal Buffer · 12°C Tomato Safe]
+    end
+
+    subgraph Tier1_Sensors["Tier 1: Sensing & Metering Array"]
+        Soil_Node[Dual-Depth Capacitive FDR Probes\n10cm & 30cm Root Moisture]
+        Flow_Meter[1-inch Hall-Effect Pulse Flow Meter\nPhysical Entitlement Ground Truth]
+        Local_Meteo[SHT31-D Temp/RH + Pyranometer\nLocal FAO-56 ET0 Inputs]
+        Pulse_Valve[1-inch 12V Latching Solenoid Valve\nZero Holding Power]
+    end
+
+    Soil_Node -->|ADC / I2C| Edge_MCU
+    Flow_Meter -->|Pulse Counter Interrupt| Edge_MCU
+    Local_Meteo -->|I2C / Analog| Edge_MCU
+    Edge_MCU -->|50ms DC Pulse| Pulse_Valve
     
-    PV_Array -->|DC Power Bus| Altivar_VFD
+    PV_Array ==> DC_SPD ==> TeSys_Switch
+    TeSys_Switch ==>|Position 1: Morning Irrigation| Altivar_VFD ==> Sub_Pump
+    TeSys_Switch ==>|Position 2: Afternoon Pre-Cooling| Cold_Comp ==> PCM_Cooler
+
     Altivar_VFD <-->|RS485 Modbus RTU| Modbus_Master
     Modbus_Master <--> Edge_MCU
-    
-    Edge_MCU -->|GPIO / Relay Trigger| TeSys_Switch
-    Altivar_VFD --> TeSys_Switch
-    TeSys_Switch -->|Load 1: Irrigation Mode| Sub_Pump
-    TeSys_Switch -->|Load 2: Cold-Chain Mode| Cold_Comp
+    Edge_MCU -->|GPIO + Opto-Relay Interlock| TeSys_Switch
 
     Edge_MCU <--> Offline_DB
-    Edge_MCU <--> TinyML_Engine
+    Edge_MCU <--> Entitle_Eng
     Edge_MCU <--> Load_Router
 
     Edge_MCU <-->|MQTT over TLS via 4G / 2G Fallback| Agro_Twin
     Agro_Twin <--> Det_RAG
     Agro_Twin <--> FPO_Dash
     Agro_Twin <--> DISCOM_Port
-    Det_RAG <--> Farmer_App
 ```
 
 ---
 
 ## 2. The Three Flow Topologies
 
-### Flow 1: Data Flow Topology
+### Flow 1: Data Flow & Anti-Water Hammer Sequencing
 
 ```mermaid
 sequenceDiagram
     autonumber
-    participant Soil as FDR Soil Probe
-    participant Edge as Edge Gateway (MCU)
-    participant VFD as Altivar Solar VFD
-    participant Cloud as Cloud Digital Twin
-    participant Farmer as Farmer Phone (WhatsApp/SMS)
+    participant Soil as FDR Soil Probes
+    participant Flow as Hall-Effect Flow Meter
+    participant Edge as Edge Gateway (ESP32-S3)
+    participant VFD as Altivar Solar ATV320
+    participant Valve as Latching Solenoid Valve
+    participant TeSys as TeSys DC Changeover
+    participant Comp as Pre-Cooler Compressor
 
-    Soil->>Edge: Periodic LoRa Telemetry (Moisture @ 10cm, 30cm, Temp)
-    Edge->>VFD: Poll Modbus Registers (DC Bus V, Motor Current, Hz, Faults)
-    VFD-->>Edge: Returns Telemetry Payload
-    Edge->>Edge: Execute Local FAO-56 Water Balance & TinyML Depletion
-    alt Moisture < RAW (Depletion Threshold Met)
-        Edge->>VFD: Send Modbus RUN command (Target: 48 Hz)
-        Edge->>Soil: Pulse OPEN Latching Solenoid Valve
-        Edge->>Farmer: SMS/Audio: "Irrigation Started. Solar Pumping Active."
-    else Moisture >= Field Capacity (Soil Saturated)
-        Edge->>Soil: Pulse CLOSE Latching Solenoid Valve
-        Edge->>VFD: Ramp down pump motor to 0 Hz
-        Edge->>Edge: Trigger TeSys Contactor: Divert Solar to Cold Room
-        Edge->>Farmer: SMS/Audio: "Root Zone Full. Diverting Solar to Cold Storage."
+    Soil->>Edge: Periodic Soil Moisture @ 10cm, 30cm
+    Edge->>VFD: Poll Modbus Regs: 3201 (ETA), 3202 (RFRd), 3204 (LCR), 3207 (DC Bus)
+    VFD-->>Edge: Returns Drive Telemetry
+    Edge->>Flow: Increment Cumulative Litres Metered
+    
+    Note over Edge: Evaluate 3-Layer Entitlement: Is V_today >= V_day?
+    alt Daily Quota Met OR Soil Saturated
+        Edge->>VFD: Write 7 (0x0007) to Reg 8501 (CMD) -> Ramp down to 0 Hz (8s)
+        VFD-->>Edge: Reg 3202 (RFRd) confirms 0.0 Hz; Reg 3201 confirms Drive Stopped
+        Flow-->>Edge: Confirms Flow Q = 0 LPM
+        Edge->>Valve: Send 50ms DC pulse to CLOSE valve under ZERO flow (Prevents Water Hammer)
+        Note over Edge,TeSys: Mandatory 5-Second Dead-Band Dwell (DC Bus Bleed Down)
+        Edge->>TeSys: De-energize Contactor 1; Energize Contactor 2 (DC Bus to Position 2)
+        Edge->>Comp: Enable Compressor Inverter (12°C Tomato Pre-Cooling Active)
     end
-    Edge->>Cloud: Opportunistic MQTT Batch Upload (Compressed JSON)
 ```
 
-### Flow 2: Energy Flow Topology
+### Flow 2: Energy Flow Topology (Upstream DC Routing)
 
 ```mermaid
 flowchart LR
-    Solar[Solar PV Array\n3.0 kW - 5.0 kW Peak DC] -->|DC Bus: 350V - 600V| Inverter[Altivar ATV320\nVariable Frequency Drive]
+    PV[Solar PV Array\n4.8 kWp · 350V - 600V DC] --> SPD[DC Isolator +\nType-2 SPD]
+    SPD --> TeSys{Schneider TeSys D\nDC Changeover Contactors\nMechanically Interlocked}
     
-    Inverter --> Switch{Schneider TeSys\nContactor Interlock}
+    TeSys -->|Position 1: 08:30 - 11:30 AM| VFD[Schneider Altivar Solar\nATV320 VFD]
+    VFD --> Pump[5 HP Submersible Pump\nPulsed Micro-Drip: 7,000 m3/yr Saved]
     
-    Switch -->|Morning / Soil Stress| Pump[Submersible Pump Motor\n3HP AC Induction Motor]
-    Pump --> Hydraulic[Pressurized Water Output\n12,000 Litres/hr into Drip Lines]
-    
-    Switch -->|Afternoon / Quota Met| Cold[Micro-Cold Room\n1.8 kW Variable Speed Compressor]
-    Cold --> Thermal[Thermal Storage / PCM Ice Bank\nMaintains 4°C for 36 Hours]
+    TeSys -->|Position 2: 11:30 AM - 03:30 PM\n(After 5s Dead-Band)| Inverter[Dedicated DC Inverter\nCompressor Controller]
+    Inverter --> Cold[2 MT Farm Pre-Cooler\n12°C Safe Setpoint · 1.31 t/yr Saved\nUtilizes 3.43 kW Midday Surplus]
 ```
 
-### Flow 3: Financial & Economic Flow Topology
+### Flow 3: Financial & Economic Flow Topology (4-Farm Cluster)
 
 ```mermaid
 flowchart TD
-    Gov[Ministry MNRE / State Govt] -->|60% PM-KUSUM Subsidy| SolarHardware[Solar Pump & Altivar VFD Capital]
-    Bank[NABARD / Commercial Bank] -->|30% Soft Loan at 4% Interest| FPO[Farmer Producer Org / Farmer]
-    Farmer[Smallholder Farmer] -->|10% Equity Margin (₹15,000)| FPO
+    Asset[2 MT PCM Pre-Cooler\nGross Capex: ₹4,00,000] --> SharedSave[Shared-Array PV Capex Avoided:\n-₹91,000 (2.6 kWp not needed)]
+    SharedSave --> NetCapex[Net Cluster Capex: ₹3,09,000]
+    Gov[MIDH / AIF Capital Subsidy] -->|35% Subsidy Support: ₹1,08,150| ClusterCost[Net Cluster Outlay: ₹2,00,850]
     
-    FPO -->|Deploys AgroStruxure| Asset[Shared Pump & Micro-Cold Storage]
+    ClusterCost --> FarmShare[Capex Per Farm (4-Farm Cluster):\n₹50,212 per smallholder]
     
-    Asset -->|Saves ₹8,000 Diesel / Pump Repairs| Savings[Farmer Working Capital Retained]
-    Asset -->|Eliminates 20% Onion/Veg Spoilage| MandiRevenue[High Mandi Off-Season Sales: +₹35,000]
+    FarmShare --> Benefits[Annual Smallholder Gains:\n• Spoilage Avoidance: +₹15,732\n• Distress-Sale Timing: +₹12,000\n• Less Opex: -₹2,400\n= Net Gain: ₹25,332 / year]
     
-    Savings --> LoanRepay[Loan Amortization: Paid off in <14 Months]
-    MandiRevenue --> LoanRepay
-    LoanRepay --> NetWealth[Sustainable Rural Prosperity & Aquifer Conservation]
+    Benefits --> Payback[Payback Period: 2.0 Years\n(2 Crop Seasons)]
 ```
