@@ -1,3 +1,5 @@
+> **Corrected 2026-10-03.** Cold-chain energy now follows tonnes actually cooled (60 batches/yr for a 4-farm cluster = 1,062 kWh/yr, 26% of the host farm's idle surplus), not 180 operating days (3,187 kWh). The 63% idle PV is the surplus *after* irrigation is right-sized (37% is idle today under flood). Headline carbon is 0.39 t CO₂e/ha/yr (embodied emissions of avoided spoilage); the diesel-genset credit (+0.21 t) is a scenario only. See `docs/08_CLAIM_LEDGER.md` and `research/08_IMPACT/impact_model.py`.
+
 # MASTER RESEARCH & STRATEGIC TECHNICAL REPORT
 ## 2026 Yuva Yodha Energy Tech Hackathon by Schneider Electric
 ### Track: Challenge 01 — Sustainable Agriculture: Energy, Water & Productivity
@@ -13,17 +15,17 @@
 
 Across rural India, **30 million agricultural pump sets** extract **245 Billion Cubic Metres of groundwater annually (87% of national extraction)** and consume **16.53% of the nation’s electricity (~255,000 GWh)**. Under the Government of India’s **PM-KUSUM** scheme, millions of standalone solar pump sets are being deployed to decarbonize rural pumping. 
 
-However, deep field research reveals an unintended systemic failure: **The Solar Rebound Paradox**. Because solar electricity is free during peak daylight hours, farmers run their pumps continuously on unmetered flood irrigation. This accelerates groundwater depletion, waterlogs root zones, and leaches fertilizers. Crucially, solar agricultural pumps sit completely idle for **65% to 75%** of sunshine hours across the year. Meanwhile, just 500 meters away, **15% to 20% of harvested perishable produce rots at the farm gate** (a ₹92,000 Crore annual national loss) due to an absolute lack of localized cold storage.
+However, deep field research reveals an unintended systemic failure: **The Solar Rebound Paradox**. Because solar electricity is free during peak daylight hours, farmers run their pumps continuously on unmetered flood irrigation. This accelerates groundwater depletion, waterlogs root zones, and leaches fertilizers. Once irrigation is right-sized, roughly **63%** of a 4.8 kWp array's output has no pumping use (37% is idle today under flood irrigation). Meanwhile **8.37% of harvested tomatoes are lost at farm stage** (NABCONS 2022; 11.62% including market handling) for lack of localized cold storage.
 
-This report establishes the complete technical due diligence, architectural design, and impact model for **AgroStruxure™**: an ultra-low-cost (<₹3,500 BOM) edge-first retrofit kit that organically integrates with Schneider Electric’s **EcoStruxure™** architecture and **Altivar™ Solar ATV320** drives. 
+This report establishes the complete technical due diligence, architectural design, and impact model for **AgroStruxure™**: a low-cost (₹7,540 industrial BoM at 1,000 units) edge-first retrofit kit that organically integrates with Schneider Electric’s **EcoStruxure™** architecture and **Altivar™ Solar ATV320** drives. 
 
-AgroStruxure enforces scientific, physics-based water quotas using real-time **FAO-56 Penman-Monteith** evapotranspiration and dual-depth capacitive soil moisture sensing. The instant the crop root zone reaches Field Capacity, the edge controller shuts off water flow and engages **Schneider TeSys** switchgear to dynamically divert 100% of surplus daytime solar generation (3–5 kW) to an on-farm **micro-cold storage room**. 
+AgroStruxure enforces scientific, physics-based water quotas using real-time **FAO-56 Penman-Monteith** evapotranspiration and dual-depth capacitive soil moisture sensing. The instant the crop root zone reaches Field Capacity, the edge controller shuts off water flow and engages **Schneider TeSys** switchgear to dynamically divert idle midday solar (3.43 kW for a 4 h window) to a shared on-farm **pre-cooler**. 
 
 By transforming solar pumps from isolated water extractors into synchronized farm microgrids, AgroStruxure achieves:
-* **42% – 64% reduction in groundwater extraction** ($9,062\text{ m}^3/\text{ha}$ conserved).
-* **2,555 kWh clean pumping electricity freed per hectare**, with **4,200 kWh/yr** of surplus solar redirected to cooling.
-* **2.8 Metric Tonnes of perishable produce saved per hectare**, boosting annual smallholder net income by **+₹72,450**.
-* **Capital payback achieved in less than 18 days** (<0.1 crop seasons) against a volume production BOM of **₹3,480**.
+* **41.2% reduction in groundwater extraction** (7,000 m³/ha/yr conserved).
+* **1,696 kWh pumping electricity freed per hectare**; 4,137 kWh/yr of PV output idle once water is right-sized, of which a 4-farm cluster's pre-cooler uses 1,062 kWh/yr (26%).
+* **1.31 tonnes of tomatoes saved per hectare** per year (8.37% → 4.00% farm-stage loss), worth ₹15,732 plus ₹12,000 price timing; net farmer gain ₹25,332/yr.
+* **Capital payback 2.0 years** (4 harvests) on ₹50,212 net capex per farm; the ₹7,540 edge controller pays back in 1.5 years. Embodied emissions avoided: 0.39 t CO₂e/ha/yr.
 
 ---
 
@@ -88,7 +90,7 @@ An exhaustive technical audit of existing assets in `My Old Work` was conducted 
 
 1. **Data Flow:** FDR Soil Moisture Probes $\rightarrow$ LoRa IN865 $\rightarrow$ Edge Gateway $\rightarrow$ RS485 Modbus $\leftrightarrow$ Altivar ATV320 $\rightarrow$ Cellular 4G/MQTT $\rightarrow$ Cloud Digital Twin $\rightarrow$ Vernacular Voice WhatsApp Advisory.
 2. **Energy Flow:** PM-KUSUM 4.8 kWp Solar Array $\rightarrow$ DC Bus (350–600V DC) + Type-2 SPD $\rightarrow$ Schneider TeSys D Changeover Contactors (Upstream DC switching with 5s dead-band) $\rightarrow$ **Morning (Pos 1):** Altivar Solar ATV320 VFD $\to$ 5 HP Submersible Pump (pulsed drip strictly metered against seasonal entitlement) $\rightarrow$ **Afternoon (Pos 2):** Dedicated DC Inverter Compressor Controller $\to$ 2 MT PCM Farm Pre-Cooler (12 °C crop-safe pull-down, utilizing 3.43 kW average).
-3. **Financial Flow:** 4-farm cluster shares one 2 MT pre-cooler $\to$ Saves ₹91,000 in avoided PV capex $\to$ Net capex of ₹2,00,850 after 35% MIDH/AIF subsidy (₹50,212/farm) $\to$ Generates ₹25,332/farm/year net benefit $\to$ Fully pays back in **2.0 years (2 crop seasons)**.
+3. **Financial Flow:** 4-farm cluster shares one 2 MT pre-cooler $\to$ Saves ₹91,000 in avoided PV capex $\to$ Net capex of ₹2,00,850 after 35% MIDH/AIF subsidy (₹50,212/farm) $\to$ Generates ₹25,332/farm/year net benefit $\to$ Fully pays back in **2.0 years (4 harvests at 2 cycles/yr)**.
 
 ---
 
@@ -100,9 +102,9 @@ An exhaustive technical audit of existing assets in `My Old Work` was conducted 
 |---|:---:|:---:|:---:|
 | **Groundwater Extraction** | $17,000\text{ m}^3/\text{ha/yr}$ (Flood: 850mm/s) | $10,000\text{ m}^3/\text{ha/yr}$ (Drip: 500mm/s) | **41.2% Conserved ($7,000\text{ m}^3/\text{ha/yr}$)** |
 | **Pumping Energy Freed** | $4,118\text{ kWh/ha/yr}$ | $2,422\text{ kWh/ha/yr}$ | **1,696 kWh / ha / year freed** |
-| **Surplus Solar Utilized** | $4,137\text{ kWh/yr}$ idle (63% wasted) | $3,187\text{ kWh/yr}$ put to work | **77% Surplus Put to Work** (951 kWh residual) |
+| **Idle Solar / Cold-Chain Energy** | $2,442\text{ kWh/yr}$ idle today (37%); $4,137$ once right-sized (63%) | $1,062\text{ kWh/yr}$ runs a 4-farm cluster's pre-cooler | **26% of host-farm surplus used** (3,075 kWh headroom, not claimed) |
 | **Post-Harvest Spoilage** | 8.37% farm loss ($2.51\text{ t/yr}$) | 4.00% residual loss ($1.20\text{ t/yr}$) | **1.31 Tonnes Produce Saved / ha / yr** |
-| **Carbon Abatement** | Baseline diesel genset/loss | Solar cooling + saved food | **2.94 Tonnes CO₂e Abated / ha / yr** |
+| **Carbon Abatement** | Baseline spoilage | Embodied emissions of avoided spoilage | **0.39 Tonnes CO₂e / ha / yr** (diesel-displacement scenario not claimed) |
 | **Controller BOM (Scale)** | N/A (Disjointed products) | Complete industrial BOM | **₹7,540 (1,000-unit scale)** |
 | **Farmer Annual Net Gain** | Baseline farm-gate sales | Spoilage saved + distress avoided | **+₹25,332 Net Gain / ha / yr** |
 | **Capital Payback Period** | 3 to 5 Years (Commercial cold) | Tier A: 4-Farm Shared Pre-Cooler | **2.0 Years (2 seasons)**; Tier B Hub: 4.2 Years |

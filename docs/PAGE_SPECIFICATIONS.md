@@ -1,4 +1,7 @@
 # AgroStruxure™ Complete Page & Screen Specifications
+
+> **Superseded figures (2026-10-03).** This document predates the corrected impact model. Numbers such as 42–64% water saving, 2,555 kWh, 4,200 kWh, 2.8 t, +₹72,450, "<18-day payback", ₹3,480 BoM, 3,187 kWh "captured" and 2.94 t CO₂e are retired. Quote figures only from `docs/08_CLAIM_LEDGER.md` (41.2%, 7,000 m³, 1,062 kWh cluster cooling, 1.31 t, ₹25,332/yr, 2.0-year payback, ₹7,540 BoM, 0.39 t CO₂e).
+
 **Document Code:** SPEC-PAGE-01  
 **Project:** AgroStruxure™ (Yuva Yodha 2026 / Schneider Electric India)  
 **Author:** Senior Product Designer, UX Architect & Frontend Design Engineer  

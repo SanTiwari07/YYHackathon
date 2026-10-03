@@ -34,7 +34,11 @@
 
 ## 1. Thesis
 
-India's solar irrigation programme has solved an energy problem and created a water problem. Under PM-KUSUM, over **10.9 lakh standalone solar pumps** are installed under Component B alone. Each one hands a farmer electricity at **zero marginal cost** — and with it, no economic reason ever to stop pumping.
+> **Corrected 2026-10-03.** Cold-chain energy now follows tonnes actually cooled (60 batches/yr for a 4-farm cluster = 1,062 kWh/yr, 26% of the host farm's idle surplus), not 180 operating days (3,187 kWh). The 63% idle PV is the surplus *after* irrigation is right-sized (37% is idle today under flood). Headline carbon is 0.39 t CO₂e/ha/yr (embodied emissions of avoided spoilage); the diesel-genset credit (+0.21 t) is a scenario only. See `docs/08_CLAIM_LEDGER.md` and `research/08_IMPACT/impact_model.py`.
+
+> *Long-form proposal. For the portal's 300–500-word summary use `EXEC_SUMMARY_500W.md`.*
+
+India's solar irrigation programme has solved an energy problem and created a water problem. Under PM-KUSUM, about **10.06 lakh standalone solar pumps** had been installed under Component B alone by 31 Jan 2026 (MNRE, as reported). Each one hands a farmer electricity at **zero marginal cost** — and with it, no economic reason ever to stop pumping.
 
 The literature is clear that this is not an information failure. Farmers are not over-irrigating because they lack a soil moisture reading. They are over-irrigating because *stopping has no economic value*. A controller that says "stop" solves nothing if stopping costs the farmer potential yield and gains him nothing.
 
@@ -58,7 +62,7 @@ The corrective finding matters more than the problem statement: groundwater outc
 **Design consequence:** Efficiency alone is insufficient. The system must cap volume, not just optimize single irrigation events.
 
 ### 2.2 Two-Thirds of the Energy is Wasted
-Shah et al. (IWMI) find off-grid solar pumps **waste roughly two-thirds of the energy they generate**. Our own model reproduces this independently from first principles: a 4.8 kWp array on a 1 ha tomato farm generates 6,559 kWh/year while entitlement-scheduled pumping consumes 2,422 kWh — leaving **4,137 kWh/year (63% of generation) completely idle**. That idle energy is the physical resource AgroStruxure monetises.
+IWMI research reports that free solar power raised groundwater extraction by 16–39% in a Rajasthan study (confirm exact citation). Our model quantifies the second effect: a 4.8 kWp array on a 1 ha tomato farm generates 6,559 kWh/year. Flood pumping uses 4,118 kWh, so 2,442 kWh (37%) is idle today; once irrigation is right-sized pumping falls to 2,422 kWh and **4,137 kWh/year (63% of generation) has no pumping use**. That surplus is the physical resource AgroStruxure puts to work.
 
 ### 2.3 Post-Harvest Loss — The Correct Baseline
 PROP-01 cited "15–20% spoilage" and "₹92,000 Cr". Both are stale and easily challenged:
@@ -293,9 +297,10 @@ $$e = \frac{\rho \cdot g \cdot H}{3.6 \times 10^6 \cdot \eta_{wire-to-water}} = 
 | Pumping Demand (Flood Baseline) | 4,118 kWh/year | $17,000\text{ m}^3 \times 0.242\text{ kWh/m}^3$ |
 | Pumping Demand (AgroStruxure) | 2,422 kWh/year | $10,000\text{ m}^3 \times 0.242\text{ kWh/m}^3$ |
 | **Pumping Energy Freed** | **1,696 kWh/year** | Clean energy liberated from pumping |
-| **Idle PV Surplus Today** | **4,137 kWh/year (63%)** | Corroborates Shah et al. (two-thirds wasted) |
-| **Surplus Put to Work (Pre-Cooling)** | **3,187 kWh/year (77%)** | 180 cold-chain operating days |
-| **Residual Surplus (Uncaptured)** | **951 kWh/year (23%)** | Transparently stated, not rounded away |
+| **Idle PV Today (flood pumping)** | **2,442 kWh/year (37%)** | 6,559 − 4,118 |
+| **Idle PV Once Water Is Right-Sized** | **4,137 kWh/year (63%)** | Idle-today + 1,696 kWh freed |
+| **Cluster Cold-Chain Energy** | **1,062 kWh/year (26% of host surplus)** | 60 batches × 17.7 kWh (4 farms × 30 t ÷ 2 MT); 266 kWh per farm |
+| **Headroom After Cooling** | **3,075 kWh/year (47% of PV)** | Reported, not claimed |
 
 ### 9.3 Post-Harvest Produce Preservation
 * Baseline farm-stage loss (NABCONS 2022, tomato): **8.37%** ($2.51\text{ t/ha/year}$ on 30 t yield).
@@ -305,9 +310,8 @@ $$e = \frac{\rho \cdot g \cdot H}{3.6 \times 10^6 \cdot \eta_{wire-to-water}} = 
 * Distress-Sale Avoidance (holding 2–4 days for mandi price stabilization): **₹12,000/ha/year**.
 
 ### 9.4 Carbon Abatement
-* Solar pre-cooling displacing diesel genset ($3,187\text{ kWh} \times 0.80\text{ kg CO}_2\text{e/kWh}$): **2.55 t CO₂e/year**.
-* Avoided food spoilage embodied emissions ($1.31\text{ t} \times 0.30\text{ kg CO}_2\text{e/kg}$): **0.39 t CO₂e/year**.
-* **Total Greenhouse Gas Mitigation:** **2.94 t CO₂e/ha/year**.
+* Avoided food spoilage embodied emissions ($1.31\text{ t} \times 0.30\text{ kg CO}_2\text{e/kg}$): **0.39 t CO₂e/ha/year**.
+* **Headline carbon:** **0.39 t CO₂e/ha/year**. A diesel-displacement scenario (+0.21 t) is not claimed because smallholders have no cooling today.
 
 ### 9.5 Two-Tier System Economics & Defensible Payback
 
@@ -318,7 +322,7 @@ $$e = \frac{\rho \cdot g \cdot H}{3.6 \times 10^6 \cdot \eta_{wire-to-water}} = 
 * After 35% MIDH / Agriculture Infrastructure Fund (AIF) subsidy: **₹2,00,850**.
 * **Capital Cost per Farm (4-farm cluster):** **₹50,212**.
 * Annual Net Benefit per Farm: ₹15,732 (spoilage) + ₹12,000 (timing) - ₹2,400 (opex) = **₹25,332/year**.
-* **Payback Period (Tier A):** **2.0 years (2 crop seasons)** post-subsidy; **3.0 years** unsubsidized.
+* **Payback Period (Tier A):** **2.0 years (4 harvests at 2 cycles/yr)** post-subsidy; **3.0 years** unsubsidized.
 
 #### Tier B: FPO Aggregation Hub (20 Farms Sharing a 5 MT Facility)
 * Capital Expenditure (5 MT cold room + dedicated 4 kWp PV array): **₹12,00,000**.
@@ -330,7 +334,7 @@ $$e = \frac{\rho \cdot g \cdot H}{3.6 \times 10^6 \cdot \eta_{wire-to-water}} = 
 #### Standalone Controller Economics (Tier 0 Retrofit)
 * Edge Controller BOM: **₹7,540**.
 * Farmer annual savings from avoided pump dry-run damage, motor rewinding, and waterlogging yield protection: ~₹5,000/year.
-* **Standalone Payback:** **1.5 years (~1.5 crop seasons)**.
+* **Standalone Payback:** **1.5 years (3 crop seasons)**.
 
 ---
 
@@ -388,7 +392,7 @@ $$e = \frac{\rho \cdot g \cdot H}{3.6 \times 10^6 \cdot \eta_{wire-to-water}} = 
 * **1:40–2:30 (Safe Automated Cut-Off & Upstream Routing):** Daily volume met $\to$ VFD decelerates to 0 Hz $\to$ Flow confirms zero $\to$ Latching valve pulses shut $\to$ **5-second dead-band** $\to$ TeSys switches DC bus to Position 2 $\to$ Compressor pre-cools tomato batch at **12 °C safe setpoint**.
 * **2:30–3:15 (Cloud Transient Resilience):** Inject monsoon cloud cover. Pump modulates 36–50 Hz; PCM thermal buffer rides through pre-cooling dips without electrical batteries.
 * **3:15–4:00 (FPO Credit Trading):** Neighbour requests water quota. Farmer trades unused entitlement for cooling credits; cluster aquifer cap remains intact.
-* **4:00–5:00 (Quantified Proof):** Live audit card verifies 7,000 m³ water conserved, 3,187 kWh routed, 1.31 t produce saved, and **₹91,000 avoided PV capex**.
+* **4:00–5:00 (Quantified Proof):** Live audit card verifies 7,000 m³ water conserved, 1,062 kWh cluster cooling energy, 1.31 t produce saved, and **₹91,000 avoided PV capex**.
 
 ---
 

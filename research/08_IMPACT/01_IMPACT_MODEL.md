@@ -22,15 +22,17 @@ Water Extraction (annual, 2 cycles) 17,000 m³/ha/yr         10,000 m³/ha/yr   
 Specific Pumping Energy (@ 40m head) 0.242 kWh/m³           0.242 kWh/m³           45% wire-to-water eff.
 Annual Solar PV Generation (4.8kWp)  6,559 kWh/year         6,559 kWh/year         4.8 PSH/day, PR 0.78
 Pumping Electricity Consumed         4,118 kWh/year         2,422 kWh/year         1,696 kWh/yr freed
-Daytime PV Surplus (Idle Today)      4,137 kWh/year (63%)   3,187 kWh/yr routed    77% surplus utilized
-Residual Uncaptured Surplus          0 kWh                  951 kWh/year (23%)     Transparently stated
+PV Idle Today (flood pumping)        2,442 kWh/year (37%)   n/a                    PV 6,559 - pumping 4,118
+PV Surplus Once Water Right-Sized    n/a                    4,137 kWh/year (63%)   Idle-today + 1,696 freed
+Cluster Cold-Chain Energy (4 farms)  0 kWh                  1,062 kWh/yr           26% of host surplus; 266 kWh/farm
+Host-Farm Headroom After Cooling     n/a                    3,075 kWh/yr (47% PV)  Reported, not claimed
 Post-Harvest Loss (Farm Stage)       8.37% (2.51 t/ha/yr)   4.00% (1.20 t/ha/yr)   1.31 t/ha/yr preserved
 Direct Economic Spoilage Saved       Baseline loss          ₹15,732 / ha / year    @ ₹12/kg farm-gate
 Distress-Sale Avoidance (Price timing)Baseline distress      ₹12,000 / ha / year    Holding 2–4 days
-GHG Emissions Abated (per year)      Baseline genset/loss   2.94 t CO₂e / ha / yr  Cooling (2.55) + Food (0.39)
+GHG Emissions Abated (per year)      Baseline spoilage      0.39 t CO₂e / ha / yr  Embodied emissions of avoided spoilage
 Edge Controller BOM (1,000 units)    Disjointed systems     ₹7,540                 Complete industrial BOM
 Shared-Array PV Capex Avoided        ₹91,000 (own 2.6kWp)   ₹0 (shared pump PV)    -₹91,000 capex saving
-Tier A Pre-Cooler Payback (4 farms)  Commercial cold        2.0 Years (2 seasons)  Post-subsidy (3.0 yr pre)
+Tier A Pre-Cooler Payback (4 farms)  Commercial cold        2.0 Years (4 harvests) Post-subsidy (3.0 yr pre)
 Tier B FPO Holding Room Payback      Commercial cold        4.2 Years              Post-subsidy (6.5 yr pre)
 ========================================================================================
 ```
@@ -66,17 +68,18 @@ $$SEC = \frac{\rho \cdot g \cdot H}{3.6 \times 10^6 \times \eta_{system}} = \fra
 1. **Pumping Energy Freed:**
    $$E_{freed} = \Delta W_{annual} \times SEC = 7,000\text{ m}^3 \times 0.242\text{ kWh/m}^3 = \mathbf{1,696\text{ kWh / ha / year}}$$
 
-2. **Solar PV Surplus Today (Idle Wastage):**
+2. **Idle Solar (today, and once water is right-sized):**
    - 4.8 kWp array generates $4.8 \times 4.8\text{ PSH} \times 365 \times 0.78 = \mathbf{6,559\text{ kWh / year}}$.
-   - Scheduled pumping consumes $10,000\text{ m}^3 \times 0.242 = 2,422\text{ kWh / year}$.
-   - **Idle Solar Surplus Today:** $6,559 - 2,422 = \mathbf{4,137\text{ kWh / year}}$ (**63.1% of generation sits idle**, matching Shah et al. 2016).
+   - Flood pumping consumes $17,000\text{ m}^3 \times 0.242 = 4,118\text{ kWh / year}$, so **2,442 kWh (37%) is idle today**.
+   - Right-sized pumping consumes $10,000\text{ m}^3 \times 0.242 = 2,422\text{ kWh / year}$, so **4,137 kWh (63.1%) is idle once water is right-sized** (idle-today + 1,696 kWh freed). The surplus exists *because* irrigation is right-sized.
 
-3. **Surplus Put to Work (2 MT PCM Farm Pre-Cooler):**
-   - Pull-down of 2 MT tomato from 32 °C to 12 °C safe setpoint: $Q_{th} = 2000 \times 3.7 \times 20 / 3600 = 41.1\text{ kWh}_{th}$.
-   - Electrical demand @ COP 3.0: $41.1 / 3.0 = 13.7\text{ kWh}_{el}$. Over 4-hour diversion window: **3.43 kW** (fits inside 4.8 kWp array).
-   - Daily energy (pull-down 13.7 kWh + hold 4.0 kWh): $17.7\text{ kWh/day}$.
-   - Operating over 180 cold-chain days/year: $17.7 \times 180 = \mathbf{3,187\text{ kWh / year}}$ captured (**77% of surplus utilized**).
-   - **Residual Uncaptured Surplus:** $4,137 - 3,187 = \mathbf{951\text{ kWh / year (23\%)}}$, transparently acknowledged.
+3. **Cold-Chain Energy (2 MT PCM pre-cooler shared by a 4-farm cluster):**
+   - Pull-down of 2 MT tomato from 32 °C to 12 °C: $Q_{th} = 2000 \times 3.7 \times 20 / 3600 = 41.1\text{ kWh}_{th}$; at COP 3.0 that is $13.7\text{ kWh}_{el}$, i.e. **3.43 kW** over a 4 h window (fits the 4.8 kWp host array).
+   - Per batch (pull-down 13.7 + hold 4.0): $17.7\text{ kWh}$.
+   - Batches follow tonnage, not calendar days: 30 t/ha ÷ 2 MT = 15 per ha-year; 4 farms = **60 batches/yr** (120 t of the room's 360 t/yr capacity, 33% utilised).
+   - **Cluster cold-chain energy:** $60 \times 17.7 = \mathbf{1,062\text{ kWh / year}}$ = **26% of the host farm's 4,137 kWh surplus** (266 kWh per farm). Only the host farm's array is used.
+   - **Headroom after cooling:** $4,137 - 1,062 = \mathbf{3,075\text{ kWh / year}}$ (47% of PV output): reported, not claimed.
+   - *Correction 2026-10-03:* earlier versions used 180 batch-days (3,187 kWh, '77% captured'), which implied 360 t/yr for one hectare.
 
 ---
 
@@ -91,6 +94,6 @@ $$SEC = \frac{\rho \cdot g \cdot H}{3.6 \times 10^6 \times \eta_{system}} = \fra
 ---
 
 ### D. Greenhouse Gas (GHG) Abatement:
-- Solar cooling displacing diesel genset ($3,187\text{ kWh} \times 0.80\text{ kg CO}_2\text{e/kWh}$): $2.55\text{ t CO}_2\text{e/year}$.
 - Embodied emissions in avoided tomato spoilage ($1.31\text{ t} \times 0.30\text{ kg CO}_2\text{e/kg}$): $0.39\text{ t CO}_2\text{e/year}$.
-- **Total Carbon Mitigated:** $\mathbf{2.94\text{ tonnes CO}_2\text{e / ha / year}}$.
+- **Headline carbon:** $\mathbf{0.39\text{ tonnes CO}_2\text{e / ha / year}}$.
+- *Scenario only (not in headline):* if solar cooling displaced a diesel genset, $266\text{ kWh} \times 0.80 = 0.21\text{ t CO}_2\text{e/year}$ more. Smallholders have no cooling today, so no displacement is claimed.

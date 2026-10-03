@@ -18,7 +18,7 @@
 4. **Target Crops:**
    High-value, perishable horticulture crops with chilling sensitivity, primarily **Tomato** (model benchmark), alongside chili, onion, capsicum, and leafy greens.
 5. **Energy Component:**
-   4.8 kWp PM-KUSUM Component B standalone solar PV array (350–600V DC). Generates 6,559 kWh/yr; scheduled pumping consumes 2,422 kWh/yr; surplus 4,137 kWh/yr (63%) dynamically rerouted to farm-gate pre-cooling (3,187 kWh/yr utilized; 951 kWh/yr residual).
+   4.8 kWp PM-KUSUM Component B standalone solar PV array (350–600V DC). Generates 6,559 kWh/yr; scheduled pumping consumes 2,422 kWh/yr; surplus 4,137 kWh/yr (63%) once irrigation is right-sized (today, under flood irrigation, 2,442 kWh/yr = 37% is idle); a 4-farm cluster's 2 MT pre-cooler draws 1,062 kWh/yr (26% of the host farm's surplus; 266 kWh per farm); the remaining 3,075 kWh/yr (47% of PV output) is headroom and is not claimed.
 6. **Water Component:**
    FAO-56 Penman-Monteith water budgeting coupled with 1-inch pulse flow meter and dual-depth capacitive FDR soil moisture probes. Reduces seasonal water application from 850 mm (flood) to 500 mm (pulsed drip), saving 7,000 m³/ha/yr (41.2% conservation).
 7. **Productivity Component:**
@@ -44,9 +44,9 @@
 17. **Deployment Model:**
     Cluster-shared model: 4 smallholder farms share one 2 MT pre-cooler unit, avoiding ₹91,000 in standalone PV capex. FPO Hub model: 20 farms share a central 5 MT aggregation cold room. Supported by local "Urja Mitras" (trained rural clean-tech youth).
 18. **Business/Economic Model:**
-    Controller BOM is ₹7,540 at 1,000-unit scale. Tier A cluster pre-cooler costs ₹50,212 per farm after 35% MIDH/AIF subsidy, generating +₹25,332/farm/yr in net benefits (spoilage saved + price timing - opex). Capital payback in 2.0 years (2 crop seasons). Standalone controller pays back in 1.5 crop seasons.
+    Controller BOM is ₹7,540 at 1,000-unit scale. Tier A cluster pre-cooler costs ₹50,212 per farm after 35% MIDH/AIF subsidy, generating +₹25,332/farm/yr in net benefits (spoilage saved + price timing - opex). Capital payback in 2.0 years (4 harvests at 2 cycles/yr). Standalone controller pays back in 1.5 years (3 crop seasons).
 19. **Scalability:**
-    Drive-agnostic design compatible with 10.9 lakh existing PM-KUSUM Component B standalone pumps via digital I/O or RS485 Modbus; OEM pre-assembly skid with Schneider Altivar Solar drives for new tenders.
+    Drive-agnostic design compatible with the ≈10.06 lakh PM-KUSUM Component B standalone pumps installed by 31 Jan 2026 (MNRE, as reported; 13.3 lakh sanctioned) via digital I/O or RS485 Modbus; OEM pre-assembly skid with Schneider Altivar Solar drives for new tenders.
 20. **Current Implementation Status:**
     Complete mathematical model (`impact_model.py`), complete system architecture and Modbus register maps, functional deterministic RAG and weather clients from validated prior art, and high-fidelity software simulator (`AgroSim`).
 
@@ -91,7 +91,8 @@ WHAT IS PLANNED
 WHAT IS PROJECTED
 • 41.2% groundwater conservation (7,000 m³/ha/yr).
 • 1,696 kWh/ha/yr pumping energy liberated.
-• 3,187 kWh/yr solar surplus redirected to cooling.
+• 1,062 kWh/yr of cluster pre-cooling energy (26% of the host farm's 4,137 kWh/yr surplus; 266 kWh per farm).
+• 0.39 t CO₂e/ha/yr embodied emissions of avoided spoilage.
 • 1.31 tonnes/ha/yr perishable produce preserved.
 • ₹25,332/farm/yr net economic benefit.
 • 2.0-year capital payback for Tier A 4-farm cluster.
@@ -99,9 +100,12 @@ WHAT IS PROJECTED
 WHAT WE MUST NOT CLAIM
 • We MUST NOT claim that physical hardware has been field-tested in Nashik or Rajasthan during Phase 1.
 • We MUST NOT claim that the edge controller BOM is ₹3,480 (it is ₹7,540 for industrial grade).
-• We MUST NOT claim 18-day payback (payback is 2.0 years for Tier A pre-cooler, 1.5 crop seasons for controller).
+• We MUST NOT claim 18-day payback (payback is 2.0 years for Tier A pre-cooler, 1.5 years (3 crop seasons) for controller).
 • We MUST NOT claim 4°C cold storage for tomatoes (it causes chilling injury; setpoint is 12°C).
 • We MUST NOT claim that contactors switch on the VFD output (they switch upstream on the DC bus).
-• We MUST NOT claim 100% surplus solar capture (77% captured, 951 kWh/yr residual uncaptured).
+• We MUST NOT claim the surplus is fully used: cooling a 4-farm cluster uses 1,062 kWh/yr (26% of the host farm's surplus); 3,075 kWh/yr is unclaimed headroom.
+• We MUST NOT claim a diesel-displacement carbon credit (headline is 0.39 t CO₂e/ha/yr; smallholders have no cooling today).
+• We MUST NOT call Sahyadri FPO or the Schneider rural EPC channel confirmed partners (proposed only).
+• We MUST NOT present 63% idle PV as today's figure (it is 37% today; 63% after right-sizing water).
 • We MUST NOT claim nationwide deployment has already occurred.
 ```

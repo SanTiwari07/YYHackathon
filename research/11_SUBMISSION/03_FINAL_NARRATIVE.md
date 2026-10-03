@@ -1,3 +1,5 @@
+> **Corrected 2026-10-03.** Cold-chain energy now follows tonnes actually cooled (60 batches/yr for a 4-farm cluster = 1,062 kWh/yr, 26% of the host farm's idle surplus), not 180 operating days (3,187 kWh). The 63% idle PV is the surplus *after* irrigation is right-sized (37% is idle today under flood). Headline carbon is 0.39 t CO₂e/ha/yr (embodied emissions of avoided spoilage); the diesel-genset credit (+0.21 t) is a scenario only. See `docs/08_CLAIM_LEDGER.md` and `research/08_IMPACT/impact_model.py`.
+
 # 03 Master Submission Narrative: AgroStruxure
 
 **Document Code:** SUB-NAR-03  
@@ -10,7 +12,7 @@
 
 ### Section 1: Executive Summary & Title (Word Count Target: 150 – 250 Words)
 
-India’s rapid deployment of over 10.9 lakh standalone solar pumps under PM-KUSUM Component B has solved an energy crisis but created an acute water crisis. Because solar electricity is free during daylight hours, farmers run pumps continuously without marginal cost constraints. Field measurements confirm this "solar rebound effect" increases groundwater extraction by 16% to 39%. Simultaneously, off-grid solar pumps sit idle for roughly two-thirds of annual generation (wasting ~4,137 kWh/year per 5 HP installation), while 8.37% of harvested perishable produce rots at the farm gate due to field heat and lack of cold storage.
+India’s rapid deployment of about 10.06 lakh standalone solar pumps under PM-KUSUM Component B (31 Jan 2026, MNRE as reported) has solved an energy crisis but created an acute water crisis. Because solar electricity is free during daylight hours, farmers run pumps continuously without marginal cost constraints. An IWMI-cited Rajasthan study reports that this "solar rebound effect" increases groundwater extraction by 16% to 39%. Once irrigation is right-sized, about 63% of a 4.8 kWp array's output (4,137 kWh/year) has no pumping use, while 8.37% of harvested tomatoes are lost at farm stage (NABCONS 2022) due to field heat and lack of cold storage.
 
 **AgroStruxure** solves this paradox by making stopping pay. Rather than relying on purely observational moisture thresholds, AgroStruxure introduces a community-governed, seasonal volumetric **water entitlement** that converts every unpumped cubic metre into **cold-chain capacity**. 
 
@@ -103,7 +105,7 @@ All metrics are derived from empirical field baselines in `impact_model.py` for 
    * *Specific Pumping Energy:* 0.242 kWh/m³ at 40 m dynamic head and 45% wire-to-water efficiency.
    * *Annual Generation (4.8 kWp):* 6,559 kWh/year.
    * *Pumping Demand:* Reduced from 4,118 kWh/year (flood) to 2,422 kWh/year, liberating **1,696 kWh/year** of pumping electricity.
-   * *Surplus Utilization:* Today, **4,137 kWh/year (63.1% of generation) sits idle**. AgroStruxure pre-cooling captures **3,187 kWh/year (77% of surplus)** across 180 cold-chain days. A residual 951 kWh/year (23%) remains uncaptured during non-cooling periods, transparently stated.
+   * *Surplus Utilization:* Today (flood) **2,442 kWh/year (37%)** is idle; once water is right-sized **4,137 kWh/year (63.1%)** is idle. A 4-farm cluster's pre-cooler runs 60 batches/year on **1,062 kWh/year (26% of the host farm's surplus; 266 kWh per farm)**. The remaining 3,075 kWh/year (47% of PV) is unclaimed headroom.
 
 3. **Perishable Food Preservation:**
    * On a 30 t/ha/year yield, baseline farm-stage spoilage is **8.37%** (2.51 t/year, NABCONS 2022).
@@ -111,9 +113,8 @@ All metrics are derived from empirical field baselines in `impact_model.py` for 
    * **Preserved Produce:** **1.31 tonnes/ha/year**, yielding **₹15,732/year** in direct revenue (@ conservative ₹12/kg farm-gate mean), plus **₹12,000/year** through avoiding distress harvest sales.
 
 4. **Carbon Abatement:**
-   * Replacing diesel genset cold storage (3,187 kWh @ 0.80 kg CO₂e/kWh): 2.55 t CO₂e/year.
    * Embodied emissions in avoided tomato spoilage (1.31 t @ 0.30 kg CO₂e/kg): 0.39 t CO₂e/year.
-   * **Total Greenhouse Gas Mitigation:** **2.94 tonnes CO₂e/ha/year**.
+   * **Headline:** **0.39 tonnes CO₂e/ha/year**. A diesel-displacement scenario (+0.21 t) is not claimed.
 
 ---
 
@@ -131,12 +132,12 @@ Rather than comparing cold-room income against a controller BOM, economics are m
   - Net capex: ₹3,09,000 $\to$ **₹2,00,850** after 35% MIDH/AIF capital subsidy.
   - Cost per farm: **₹50,212**.
   - Annual net farm gain: ₹25,332/year (₹15,732 spoilage saved + ₹12,000 price timing - ₹2,400 opex).
-  - **Payback Period:** **2.0 years (2 crop seasons)** post-subsidy; **3.0 years** unsubsidized.
+  - **Payback Period:** **2.0 years (4 harvests at 2 cycles/yr)** post-subsidy; **3.0 years** unsubsidized.
 * **Tier B — FPO Hub (20 Farms):**
   - Capex (5 MT cold room + dedicated 4 kWp array): ₹12,00,000 $\to$ ₹7,80,000 post-subsidy.
   - Net annual storage revenue (@ ₹3/kg): ₹1,84,375/year.
   - **Payback Period:** **4.2 years** post-subsidy; **6.5 years** unsubsidized.
-* **Standalone Controller:** ₹7,540 pays back in **1.5 crop seasons** via avoided pump burnout and yield protection.
+* **Standalone Controller:** ₹7,540 pays back in **1.5 years (3 crop seasons)** via avoided pump burnout and yield protection.
 
 #### 3. Commercialization & Go-to-Market Strategy
 1. **Drive-Agnostic Retrofit Channel:** Compatible with existing PM-KUSUM Component B drives (Shakti, Kirloskar, Lubi) via digital Run/Stop terminal inputs.

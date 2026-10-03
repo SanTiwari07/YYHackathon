@@ -71,3 +71,15 @@ Fixed 16:9 Stage (1920×1080) HTML Presentation
 ui-visual-validator & high-end-visual-design
 (Visual QA: contrast, spacing, zero-overflow, zero-slop)
 ```
+
+---
+
+## 4. Native deck pipeline (2026-10-03)
+
+The official deck is now a **native, editable PPTX** built with python-pptx, not HTML screenshots.
+
+- Source: `presentation/build/` (`kit.py`, `charts.py`, `slides_a.py`, `slides_b.py`, `slides_c.py`, `build_deck.py`).
+- Export and QA: `presentation/build/export_office.ps1` (desktop PowerPoint: PDF with real text + 1920x1080 PNG proofs in `presentation/qa/`).
+- Fonts: Calibri / Consolas / Nirmala UI so the file renders the same on judges' machines. No accent stripes, no text below 10 pt (body 11.5 pt or more).
+- Numbers: only from `docs/08_CLAIM_LEDGER.md` (v2) and `research/08_IMPACT/impact_model.py`. Cold-chain energy follows tonnes cooled; headline carbon is 0.39 t CO2e/ha/yr; named partners are proposed, not confirmed.
+- The earlier HTML/PNG pipeline is archived in `archive/legacy_html_deck_v1/` and `archive/legacy_scripts/`.
