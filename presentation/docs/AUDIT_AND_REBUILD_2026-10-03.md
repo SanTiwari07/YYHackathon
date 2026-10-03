@@ -1,7 +1,7 @@
 # Deck Audit and Rebuild: 2026-10-03
 
 **Scope:** the original `AgroStruxure_YuvaYodha_2026_Final.pptx/.pdf` (10 PNG screenshots, no text layer), checked against `research/08_IMPACT/impact_model.py`, the claim ledger, the asset ledger, and the public Challenge 01 pages.
-**Result:** rebuilt as a native, editable deck (`presentation/final/`), model corrected, docs reconciled. Originals are kept in `archive/legacy_decks/02_image_only_deck_2026-10-03.*`.
+**Result:** rebuilt as a native, editable deck (repo root), model corrected, docs reconciled. Originals are kept in `archive/legacy_decks/02_image_only_deck_2026-10-03.*`.
 
 **Phase 1 deadline:** Oct 4, 2026. Public pages show "Aug 15 – Oct 4" only; the 11:59 PM IST time in the repo notes was not confirmed on the portal.
 

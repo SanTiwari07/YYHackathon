@@ -45,3 +45,9 @@ dist/
 build/
 out/
 .next/
+
+# Keep the deck builder (the generic build/ rule above would otherwise hide it)
+!presentation/build/
+# Derived by build_deck.py on every run
+presentation/build/assets/schneider_logo_crop.png
+presentation/build/assets/tomato_still.jpg

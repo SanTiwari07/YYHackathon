@@ -37,7 +37,6 @@ Rebuild the deck (Windows with desktop PowerPoint; `pip install python-pptx pill
 ```powershell
 python presentation/build/build_deck.py
 powershell -NoProfile -ExecutionPolicy Bypass -File presentation/build/export_office.ps1
-copy presentation\final\AgroStruxure_YuvaYodha_2026_Final.* .
 ```
 
 ---
@@ -46,9 +45,9 @@ copy presentation\final\AgroStruxure_YuvaYodha_2026_Final.* .
 
 ```
 YYHackathon/
+├── AgroStruxure_YuvaYodha_2026_Final.pptx / .pdf   the deck (single copy)
 ├── presentation/
 │   ├── build/        python-pptx builder (kit.py, charts.py, slides_a/b/c.py), export_office.ps1
-│   ├── final/        official PPTX + PDF
 │   ├── qa/           1920x1080 PNG proofs exported from PowerPoint
 │   └── docs/         audit and rebuild log
 ├── docs/             design system, product truth, claim ledger, component/page specs

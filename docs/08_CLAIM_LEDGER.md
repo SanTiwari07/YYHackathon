@@ -1,7 +1,7 @@
 # 08 Claim Ledger: Quantitative Single Source of Truth
 **Document ID:** CLAIM-LEDGER-2026-V2 (corrected 2026-10-03)
 **Engine:** `research/08_IMPACT/impact_model.py` (reference unit: 1 ha tomato, Nashik, 4.8 kWp PM-KUSUM Component B pump, 2 cycles/yr)
-**Deck:** `presentation/final/AgroStruxure_YuvaYodha_2026_Final.pptx` (slide numbers below refer to it)
+**Deck:** `AgroStruxure_YuvaYodha_2026_Final.pptx` (repo root) (slide numbers below refer to it)
 
 Status tags: `[MODEL]` reproduces from `impact_model.py` (arithmetic only) · `[ASSUMPTION]` input chosen by the team, not a measurement ·
 `[SOURCE-CHECKED]` external figure confirmed against a public source on 2026-10-03 · `[TO CONFIRM]` quoted as reported; confirm before relying on it.
