@@ -33,6 +33,7 @@ TARGET_T          = 12.0     # tomato-safe setpoint; 4°C causes chilling injury
 COP               = 3.0      # small vapour-compression at this lift
 WINDOW_H          = 4.0      # 11:30-15:30 diversion window
 PRECOOL_MT        = 2.0      # farm-level pre-cooler batch size (Tier A)
+PCM_LATENT_KJ_KG  = 200.0    # encapsulated salt hydrate PCM, design target 190-210 kJ/kg, melt point 12-15 C (confirm vendor datasheet)
 COLD_DAYS_YEAR    = 180      # harvest + storage operating days (room CAPACITY window, not demand)
 CLUSTER_FARMS     = 4        # 1 ha farms sharing one pre-cooler, powered by the host farm's PV
 
@@ -107,7 +108,11 @@ def run_model():
           f"({batches_cluster*PRECOOL_MT:.0f} t of {room_cap_t:.0f} t room capacity = {room_util:.0f}% utilised)")
     print(f"  Cluster cold-chain energy     {cold_kwh_cluster:>8,.0f} kWh/year  = {capture:.0f}% of host-farm idle surplus")
     print(f"  Per farm (1 ha) equivalent    {cold_kwh_y:>8,.0f} kWh/year")
-    print(f"  Host-farm headroom after cooling {residual:>5,.0f} kWh/year  ({residual/pv_y*100:.0f}% of PV output; stated, not claimed)")
+    print(f"  Unallocated headroom after cooling {residual:>5,.0f} kWh/year  ({residual/pv_y*100:.1f}% of PV output; stated, not claimed)")
+    hold_th_kwh = hold_kwh * COP                                  # thermal energy the PCM must carry overnight
+    pcm_kg = hold_th_kwh * 3600 / PCM_LATENT_KJ_KG
+    print(f"  PCM carrying the {hold_kwh:.1f} kWh_el overnight hold ({hold_th_kwh:.0f} kWh_th): {pcm_kg:.0f} kg at {PCM_LATENT_KJ_KG:.0f} kJ/kg "
+          f"({hold_th_kwh*3600/210:.0f}-{hold_th_kwh*3600/190:.0f} kg across the 190-210 kJ/kg target)")
 
     print(); print(SEP); print("3. POST-HARVEST  (per hectare)"); print(SEP)
     loss_b  = YIELD_T_HA_YEAR * LOSS_FARM_BASE
@@ -141,7 +146,9 @@ def run_model():
     net_capex    = PRECOOL_CAPEX - array_saving
     after_sub    = net_capex * (1 - MIDH)
     per_farm_cap = after_sub / CLUSTER_FARMS
-    farm_gain    = saved_v + TIMING_GAIN - OPEX_FARM
+    farm_gain_base = saved_v - OPEX_FARM                  # BASE CASE: physical produce-loss reduction only
+    farm_gain    = saved_v + TIMING_GAIN - OPEX_FARM       # SCENARIO: adds optional price-timing arbitrage
+    payback_base = per_farm_cap / farm_gain_base
     payback_a    = per_farm_cap / farm_gain
     print(f"  Pre-cooler capex                    Rs {PRECOOL_CAPEX:>9,.0f}")
     print(f"  Less shared-array saving ({PV_AVOIDED} kWp)  Rs {array_saving:>9,.0f}   <- core novelty claim")
@@ -152,11 +159,17 @@ def run_model():
     print(f"    spoilage avoided                  Rs {saved_v:>9,.0f}   [high confidence]")
     print(f"    distress-sale avoidance           Rs {TIMING_GAIN:>9,.0f}   [medium, price-volatile]")
     print(f"    less opex                         Rs {-OPEX_FARM:>9,.0f}")
-    print(f"    NET                               Rs {farm_gain:>9,.0f}/year")
-    print(f"  PAYBACK, Tier A                        {payback_a:>6.1f} years (pre-subsidy: {(net_capex/CLUSTER_FARMS)/farm_gain:.1f} years)")
+    print(f"    NET, scenario incl. price timing  Rs {farm_gain:>9,.0f}/year")
+    print(f"    NET, BASE CASE (loss reduction)   Rs {farm_gain_base:>9,.0f}/year   <- headline (timing excluded)")
+    print(f"  PAYBACK, Tier A BASE CASE              {payback_base:>6.1f} years (= {payback_base*CYCLES_PER_YEAR:.1f} harvests; pre-subsidy: {(net_capex/CLUSTER_FARMS)/farm_gain_base:.1f} years)")
+    print(f"  PAYBACK, Tier A scenario + timing      {payback_a:>6.1f} years (pre-subsidy: {(net_capex/CLUSTER_FARMS)/farm_gain:.1f} years)")
     CONTROLLER_BOM, CONTROLLER_GAIN = 7540, 5000   # see section 7; benefit is approximate and NOT in farm_gain
     combined = (per_farm_cap + CONTROLLER_BOM) / (farm_gain + CONTROLLER_GAIN)
-    print(f"  Combined (cooler share + Rs {CONTROLLER_BOM:,} controller, +Rs {CONTROLLER_GAIN:,}/yr): {combined:.1f} years")
+    combined_base = (per_farm_cap + CONTROLLER_BOM) / (farm_gain_base + CONTROLLER_GAIN)
+    print(f"  Combined (cooler share + Rs {CONTROLLER_BOM:,} controller, +Rs {CONTROLLER_GAIN:,}/yr): base {combined_base:.1f} years | scenario {combined:.1f} years")
+    print(f"  Value of surplus used for cooling: base Rs {farm_gain_base*CLUSTER_FARMS/cold_kwh_cluster:,.0f}/kWh net "
+          f"(Rs {saved_v*CLUSTER_FARMS/cold_kwh_cluster:,.0f} gross) | scenario Rs {farm_gain*CLUSTER_FARMS/cold_kwh_cluster:,.0f}/kWh net "
+          f"(Rs {(saved_v+TIMING_GAIN)*CLUSTER_FARMS/cold_kwh_cluster:,.0f} gross)")
 
     print(); print(SEP); print("6. TIER B - FPO HOLDING ROOM (own array, 20-farm hub)"); print(SEP)
     HUB_CAPEX, HUB_MT  = 1200000, 5.0
@@ -206,9 +219,9 @@ def run_model():
     print(f"  Cold-chain energy        {cold_kwh_cluster:,.0f} kWh/cluster-year ({capture:.0f}% of host-farm surplus; {cold_kwh_y:,.0f} kWh per farm)")
     print(f"  Produce preserved        {saved_t:.2f} t/ha/year")
     print(f"  Carbon                   {co2_total:.2f} t CO2e/ha/year (embodied emissions of avoided spoilage)")
-    print(f"  Farmer net gain          Rs {farm_gain:,.0f}/ha/year")
+    print(f"  Farmer net gain          Rs {farm_gain_base:,.0f}/ha/year base case | Rs {farm_gain:,.0f} with optional price timing")
     print(f"  Controller BOM           Rs {bom_total:,}")
-    print(f"  Tier A payback           {payback_a:.1f} years  |  Tier B payback {hub_as/net:.1f} years")
+    print(f"  Tier A payback           {payback_base:.1f} years base case | {payback_a:.1f} years with optional price timing  |  Tier B payback {hub_as/net:.1f} years")
     print(SEP)
 
 if __name__ == "__main__":

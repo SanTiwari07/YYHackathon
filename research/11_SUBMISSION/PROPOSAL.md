@@ -1,17 +1,91 @@
-# AgroStruxure — Entitlement-Governed Solar Irrigation & Farm-Gate Pre-Cooling
+# AgroStruxure: An Agricultural Energy Orchestration Platform for Schneider Solar Infrastructure
 
 **Document Code:** YUVA-YODHA-2026-PROP-02 (supersedes PROP-01)  
 **Track:** Challenge 01 — Sustainable Agriculture: Energy, Water & Productivity  
 **Host:** Schneider Electric India  
 **Date:** October 2026  
 **Status:** Comprehensive Technical Proposal & Implementation Blueprint  
+**Subtitle:** Entitlement-Governed Solar Irrigation & Farm-Gate Pre-Cooling  
+**Core invention:** Dynamically reallocating surplus solar generation from irrigation to farm-gate thermal storage.  
 
 > **On this revision (PROP-02).** PROP-01 contained four defects that would not survive technical review: a power topology that switched contactors on a VFD output, a 4 °C setpoint that damages chilling-sensitive produce, an ET₀ engine with no sensors to feed it, and impact figures that contradicted each other across documents. All four are corrected here. Every number in Section 9 is produced by `impact_model.py` in this repository — run `python impact_model.py` and the figures reproduce identically. Where a claim is uncertain, it is labelled rather than rounded up.
 
 ---
 
+## Strategic Proposal to Schneider Electric India
+
+**The proposal.** We propose AgroStruxure™ to Schneider Electric India as an **OEM skid and software package** that extends EcoStruxure into off-grid agriculture. It turns a single-function solar pump drive into a multi-load microgrid hub: the PV array that runs the pump also runs a shared farm-gate pre-cooler, under a water entitlement that stops solar rebound.
+
+| EcoStruxure tier | AgroStruxure element | Schneider portfolio touchpoint |
+|---|---|---|
+| **Connected Products** | FDR probes, flow meter, SHT31 + pyranometer; solar pump drive; interlocked contactor pair | Altivar ATV320 (Modbus RTU, Reg 8501 command / 8502 speed reference); TeSys D LC1D09BD × 2 |
+| **Edge Control** | ESP32-S3 controller: FAO-56 budget, field-capacity cutoff, controlled zero-current changeover; runs offline | EcoStruxure edge pattern; drive-agnostic fallback through Run/Stop digital I/O |
+| **Cloud Apps & Analytics** | FastAPI telemetry, read-only vernacular advisory, FPO fleet dashboard | EcoStruxure Apps pattern; SE Ventures path to scale |
+
+**Commercial synergy.**
+* **New tenders:** Altivar ATV320 + TeSys D changeover + AgroStruxure gateway pre-wired as a factory skid (§5.4). This converts Schneider's single-function solar drive into a multi-load microgrid hub.
+* **Installed base:** 4,137 kWh/yr modelled surplus (63.1%) in our 4.8 kWp reference system; Component B installed base (816,710 pumps as of Aug 2026, MNRE; team-supplied, confirm on the dashboard) provides the target deployment opportunity. The retrofit mode is drive-agnostic. Schneider's own share of that fleet is not documented here.
+* **Recurring revenue:** fleet SaaS and cooling-as-a-service (§13).
+* **Partnership status:** Schneider Electric's rural EPC channel and Sahyadri Farmers Producer Co. are **proposed partners only**. No agreement exists.
+
+### Dual-Plane Architecture and Load Portfolio
+
+* **Control plane:** Sensors (soil, flow, PV, temperature) → ESP32-S3 edge controller → Modbus RTU commands (CiA402 profile) to the Altivar ATV320 VFD.
+* **Power plane:** PV array (4.8 kWp) → power conversion / interlocked switch stage → Load A (solar pump) / Load B (PCM chiller).
+* Irrigation is scheduled according to crop water requirement and soil moisture telemetry, while PV generation continues through midday.
+
+| Load portfolio | Loads |
+|---|---|
+| **CURRENT PROTOTYPE** | Solar pumping + soil/water control + PCM cooling |
+| **EXPANSION ROADMAP** | Crop drying + packhouse sorting + dairy chilling + water treatment |
+
+The current-prototype scope is simulated in Phase 1 and built on the HIL bench in Phase 2 (see §10). Roadmap loads are not modelled, and no energy, revenue or percentage split is claimed for them. **PCM specification:** encapsulated salt hydrate PCM, target 12–15 °C melt point and 190–210 kJ/kg latent heat (design target, assumption A18; confirm the vendor datasheet).
+
+### Solar Surplus Physics: The Cooler Does Not Depend on Irrigation Savings
+
+| Quantity (4.8 kWp array, Nashik, 1 ha tomato) | kWh/yr | Share of PV | Basis |
+|---|:---:|:---:|---|
+| PV generation | **6,559** | 100% | 4.8 kWp × 4.8 h × 365 × 0.78 |
+| Flood pumping (today) | 4,118 | 63% | 17,000 m³ × 0.242 kWh/m³ |
+| **Idle PV today** | **2,442** | **37%** | already idle, before any water saving |
+| Pumping once water is right-sized | 2,422 | 37% | 10,000 m³ × 0.242 kWh/m³ |
+| **Modelled surplus once irrigation is right-sized** | **4,137** | **63.1%** | idle today + 1,696 kWh freed |
+| **4-farm cluster pre-cooler** | **1,062** | 16% | 60 batches × 17.7 kWh |
+| **Unallocated headroom** | **3,075** | **46.9%** | 4,137 − 1,062; future loads or grid feed-in |
+
+* **Three-step balance:** 6,559 kWh PV → 2,422 kWh pumping → 1,062 kWh pre-cooling → 3,075 kWh (46.9%) unallocated headroom.
+* The pre-cooler draws 1,062 kWh, which is **43% of the 2,442 kWh that is already idle today**. It needs no irrigation saving to run.
+* Once water is right-sized the surplus grows to 4,137 kWh, a **≈4× energy margin** for cooling (3.9×).
+* **Limit of this argument:** it is an annual energy balance. The cooler needs 3.43 kW for about 4 h at midday on harvest days. Coincident power depends on harvest-day scheduling (the controller lets the pump yield to the cooler); the simulator and the Phase 2 hardware bench must confirm the overlap.
+* Water credits therefore do not buy cooling *energy*. They ration pre-cooler time slots and reward entitlement compliance (§6.2).
+
+### Why a Phase-Change Store and Not a Battery
+
+1. **Capital cost and ROI.** One batch-day needs 17.7 kWh of electricity (13.7 pull-down + 4.0 hold). Carrying all of it through a battery means ≈22 kWh nominal at 80% depth of discharge; carrying only the overnight hold means ≈5 kWh. At an indicative ₹10,000–20,000 per installed kWh (assumption A16, get quotes) that is ₹2.2–4.4 lakh for the full batch-day (₹55,000–110,000 per farm across four farms) or ₹0.5–1.0 lakh for the hold alone, before inverter and charge electronics and replacement. The PCM plates are part of the ₹400,000 cooler (compressor + PCM) that four farms share, and the whole cold-chain share after subsidy is ₹50,212 per farm.
+2. **Economic value per kWh.** On physical loss reduction alone (the base case), cooling turns surplus solar into **≈₹59 per kWh** gross ((₹15,732 × 4 farms) ÷ 1,062 kWh) or ₹50/kWh net of ₹2,400 opex per farm. With the optional price-timing scenario it is ≈₹104/kWh gross, ₹95 net. Putting the same kWh into a battery for general use, or exporting it, is worth about ₹3–5/kWh (assumption A17, indicative tariff).
+3. **Rural thermal durability.** A PCM store has no electrochemical cycling and sits at the room's own temperature. Specification (assumption A18): encapsulated salt hydrate PCM, target 12–15 °C melt point (the low end, ≈12 °C, so the store holds the room near the 12 °C setpoint) and 190–210 kJ/kg latent heat. About 216 kg (206–227 kg) carries the 4.0 kWh overnight hold (12 kWh thermal ÷ 0.2 MJ/kg). Design life target 10 years in 45 °C ambient (assumption A15: confirm the vendor's rated freeze–thaw cycles and supercooling or phase-separation behaviour before quoting). Lithium and lead-acid batteries age faster under sustained heat and daily deep cycling. Small LiFePO₄ cells stay in the field sensor nodes; this argument is about bulk storage.
+
+### Modularity: Buy the Kit Alone, or Add the Cluster Cooler
+
+| | **Standalone retrofit kit** | **Cluster pre-cooler add-on** |
+|---|---|---|
+| **Cost** | ₹7,540 BoM at 1,000 units | ₹50,212 per farm after 35% MIDH/AIF (₹400,000 gross for one shared 2 MT unit, 4 farms) |
+| **Works on** | Any PM-KUSUM pump (drive-agnostic) | Horticulture clusters. Tomato is modelled; chili and leafy greens need their own setpoints (not modelled). Wheat and cotton do not need it |
+| **Benefit** | Enforces the water entitlement on a drip-irrigated plot: 2,000 m³/ha/yr of the 7,000 m³/ha/yr reduction in modelled irrigation water application is attributable to the kit (5,000 m³ comes from drip hardware, assumed installed). Pump and yield protection ≈ ₹5,000/yr (assumption) | **Base case:** 1.31 t preserved = ₹15,732/yr, net ₹13,332 per farm. **Optional price-timing scenario:** +₹12,000, net ₹25,332 |
+| **Payback** | 1.5 years (3 crop seasons) | **Base case 3.8 years** (≈7.5 harvests; 5.8 unsubsidised). With the optional timing scenario 2.0 years (3.0 unsubsidised) |
+
+Reduced irrigation demand has no farm-gate cash value while solar power is free, so it is **not** counted in either payback. It is a modelled reduction in irrigation water application, not a measured aquifer-protection claim. The financial return rests strictly on physical produce-loss reduction; price-timing arbitrage is an optional scenario only.
+
+### Status and Claims We Do Not Make
+* **Development status:** **Phase 1 completed:** code (`impact_model.py`), math model and AgroSim (team-reported; AgroSim source is not in this repository, so link it before submission). **Phase 2 prototype:** hardware-in-the-loop (HIL) test bench with Altivar ATV320 and TeSys D. No field data exists. See §10.
+* **Partnerships:** proposed only (see above).
+* **Carbon:** the headline is **0.39 t CO₂e/ha/yr**, the embodied emissions of 1.31 t/ha/yr of preserved produce. Diesel displacement (+0.21 t CO₂e) is **not claimed**, because smallholders have no cooling today.
+
+---
+
 ## Table of Contents
 
+0. [Strategic Proposal to Schneider Electric India](#strategic-proposal-to-schneider-electric-india)
 1. [Thesis](#1-thesis)
 2. [Problem: What the Evidence Actually Says](#2-problem-what-the-evidence-actually-says)
 3. [Why Existing Solutions Do Not Close the Loop](#3-why-existing-solutions-do-not-close-the-loop)
@@ -21,7 +95,7 @@
 7. [Thermal Design and Crop-Specific Setpoints](#7-thermal-design-and-crop-specific-setpoints)
 8. [Mathematical & Hydraulic Foundation](#8-mathematical--hydraulic-foundation)
 9. [Quantified Impact — Every Figure Derived](#9-quantified-impact--every-figure-derived)
-10. [Bill of Materials](#10-bill-of-materials)
+10. [ENGINEERING ARTIFACTS](#10-engineering-artifacts)
 11. [Technology Stack & Architectural Rationale](#11-technology-stack--architectural-rationale)
 12. [Prototype Scope & 5-Minute Demo Arc](#12-prototype-scope--5-minute-demo-arc)
 13. [Deployment, Policy Alignment & Scalability](#13-deployment-policy-alignment--scalability)
@@ -38,13 +112,13 @@
 
 > *Long-form proposal. For the portal's 300–500-word summary use `EXEC_SUMMARY_500W.md`.*
 
-India's solar irrigation programme has solved an energy problem and created a water problem. Under PM-KUSUM, about **10.06 lakh standalone solar pumps** had been installed under Component B alone by 31 Jan 2026 (MNRE, as reported). Each one hands a farmer electricity at **zero marginal cost** — and with it, no economic reason ever to stop pumping.
+India's solar irrigation programme has solved an energy problem and created a water problem. Under PM-KUSUM, the Component B installed base (**816,710 standalone solar pumps as of Aug 2026**, MNRE; team-supplied, confirm on the dashboard) provides the target deployment opportunity. Each one hands a farmer electricity at **zero marginal cost** — and with it, no economic reason ever to stop pumping.
 
 The literature is clear that this is not an information failure. Farmers are not over-irrigating because they lack a soil moisture reading. They are over-irrigating because *stopping has no economic value*. A controller that says "stop" solves nothing if stopping costs the farmer potential yield and gains him nothing.
 
 **AgroStruxure makes stopping pay.**
 
-The edge controller enforces a seasonal **water entitlement** rather than an observational moisture threshold, and converts every unspent cubic metre into **cold-chain capacity** — the one thing a horticulture smallholder cannot buy cheaply and values immediately. Water the farmer does not pump becomes storage he can use or trade.
+The edge controller enforces a seasonal **water entitlement** rather than an observational moisture threshold, and rewards every unspent cubic metre with **cold-chain capacity** (pre-cooler time slots; the cooling energy itself exists with or without the savings) — the one thing a horticulture smallholder cannot buy cheaply and values immediately. Water the farmer does not pump becomes storage he can use or trade.
 
 This is the off-grid implementation of a mechanism already proven in the field. IWMI's Dhundi cooperative in Gujarat gave farmers a paid destination for surplus solar energy — a grid buyback plus an explicit groundwater conservation bonus — and measured extraction fell. Dhundi needed a DISCOM, a 25-year PPA, and a cooperative grid tie. **Component B farms have none of those.** AgroStruxure delivers the same incentive structure in hardware, at the pump shed, where the grid cannot reach.
 
@@ -61,8 +135,8 @@ The corrective finding matters more than the problem statement: groundwater outc
 
 **Design consequence:** Efficiency alone is insufficient. The system must cap volume, not just optimize single irrigation events.
 
-### 2.2 Two-Thirds of the Energy is Wasted
-IWMI research reports that free solar power raised groundwater extraction by 16–39% in a Rajasthan study (confirm exact citation). Our model quantifies the second effect: a 4.8 kWp array on a 1 ha tomato farm generates 6,559 kWh/year. Flood pumping uses 4,118 kWh, so 2,442 kWh (37%) is idle today; once irrigation is right-sized pumping falls to 2,422 kWh and **4,137 kWh/year (63% of generation) has no pumping use**. That surplus is the physical resource AgroStruxure puts to work.
+### 2.2 Idle Solar Capacity: Today and Once Water Is Right-Sized
+Our model quantifies the second effect. A 4.8 kWp array on a 1 ha tomato farm generates 6,559 kWh/year. Flood pumping uses 4,118 kWh, so 2,442 kWh (37%) is idle today. Once irrigation is right-sized, pumping falls to 2,422 kWh and **4,137 kWh/year (63% of generation) has no pumping use**. That surplus is the physical resource AgroStruxure puts to work, and the 2,442 kWh already idle today is enough on its own to run the cluster pre-cooler (1,062 kWh).
 
 ### 2.3 Post-Harvest Loss — The Correct Baseline
 PROP-01 cited "15–20% spoilage" and "₹92,000 Cr". Both are stale and easily challenged:
@@ -71,7 +145,7 @@ PROP-01 cited "15–20% spoilage" and "₹92,000 Cr". Both are stale and easily 
 * The **8.37% farm-stage share** is the exact portion on-farm pre-cooling eliminates. Claiming 8.37% rather than 20% is verifiable, defensible, and ours to make.
 
 ### 2.4 Target Market
-* **Component B (Off-grid Standalone):** 10,90,815 installed of 13,07,190 sanctioned. Surplus energy is 100% wasted; groundwater is over-extracted. **This is AgroStruxure's primary market.**
+* **Component B (Off-grid Standalone):** installed base of 816,710 pumps as of Aug 2026 (MNRE; team-supplied, confirm on the dashboard) is the target deployment opportunity; earlier drafts quoted ≈10.06 lakh (31 Jan 2026, secondary source), and the two must be reconciled. In our 4.8 kWp reference system the modelled surplus is 4,137 kWh/yr (63.1%). **This is AgroStruxure's primary market.**
 * **Component C (Feeder-Solarised / Individual Solarised):** Entitlement governance applies directly to prevent aquifer rebound even where surplus feeds the grid.
 
 ---
@@ -121,7 +195,7 @@ flowchart TD
     subgraph T1P["TIER 1 — Power &amp; Industrial Switchgear"]
         PV["PM-KUSUM PV Array<br/>4.8 kWp · 350-600V DC Bus"]
         SPD["DC Isolator + Type-2 SPD"]
-        SW["Schneider TeSys D Contactors ×2<br/>MECHANICALLY &amp; ELECTRICALLY INTERLOCKED<br/>Upstream of all drives · 5s Dead-Band"]
+        SW["Schneider TeSys D Contactors ×2<br/>MECHANICALLY &amp; ELECTRICALLY INTERLOCKED<br/>Upstream of all drives · Controlled Zero-Current Transition"]
         VFD["Schneider Altivar Solar ATV320 VFD<br/>Modbus Registers: 8501, 8502, 3201-3208"]
         COMP["Pre-Cooler Compressor Controller<br/>Soft-Start · Anti-Short Cycle Dwell"]
     end
@@ -168,7 +242,7 @@ The changeover is relocated **upstream of all motor drives onto the 350–600 V 
            ╔═════════════════════════╧═════════════════════════╗
            ║     CHANGEOVER — Schneider TeSys D ×2             ║
            ║     Mechanically & Electrically Interlocked       ║
-           ║     Break-Before-Make · 5-Second Dead-Band        ║
+           ║     Break-Before-Make · Zero-Current Transition   ║
            ║     Driven by ESP32-S3 via Opto-Isolated Relays   ║
            ╚══════════════╦═════════════════════════╦══════════╝
             POSITION 1    ║             POSITION 2  ║
@@ -189,11 +263,11 @@ To eliminate hydraulic water hammer and electrical arcing:
 2. Gateway polls register `3202` (`RFRd`) until frequency is 0 Hz, and reads register `3201` (`ETA`) to verify Drive Operation Disabled.
 3. Gateway verifies pulse flow meter registers $Q = 0\text{ LPM}$.
 4. Gateway fires a 50 ms DC pulse to seat the bistable latching solenoid valve under zero flow velocity (preventing pressure surge).
-5. Gateway initiates a **mandatory 5-second dead-band dwell**, allowing DC bus filter capacitors to bleed down.
+5. Gateway holds a **controlled zero-current transition** (a dead-band dwell whose 5-second parameter is tuned on the HIL bench), allowing DC bus filter capacitors to bleed down.
 6. Gateway energizes TeSys Contactor 2, routing DC power to the pre-cooler compressor controller.
 
 ### 5.4 Two-Tier Integration Strategy (Universal Retrofit vs. Premium OEM)
-* **Universal Retrofit Mode (Fleet Addressability):** Across India's 1.1 million existing PM-KUSUM Component B pumps (dominated by Shakti, Kirloskar, Lubi, CRI), AgroStruxure integrates via standard digital Run/Stop terminal inputs (DI1/Common) and external TeSys DC contactors.
+* **Universal Retrofit Mode (Fleet Addressability):** Across the installed PM-KUSUM Component B pumps (816,710 as of Aug 2026, MNRE; dominated by Shakti, Kirloskar, Lubi, CRI), AgroStruxure integrates via standard digital Run/Stop terminal inputs (DI1/Common) and external TeSys DC contactors.
 * **Premium Schneider OEM Bundle:** For new commercial tenders, Schneider packages the **Altivar Solar ATV320 + TeSys D changeover + AgroStruxure Gateway** as a factory-certified, pre-wired smart microgrid skid.
 
 ---
@@ -215,10 +289,10 @@ LAYER 1: EVENT CONTROL (Soil Moisture Closure)
    START when Dr ≥ RAW; STOP when θ ≥ θ_FC OR V_today ≥ V_day.
 ```
 
-### 6.2 Converting Conserved Water into Cold-Chain Currency
-Conserving water must be financially rewarding. Under AgroStruxure:
+### 6.2 Converting Reduced Irrigation Demand into Cold-Chain Currency
+Staying within the water entitlement must be financially rewarding. Under AgroStruxure:
 $$\text{1 m}^3\text{ of water unpumped} \implies 0.242\text{ kWh of solar PV freed} \implies \text{Cooling Credits}$$
-Smallholders who save water earn pre-cooling credits in the shared 2 MT unit. Surplus credits can be utilized for their own harvest or traded within the FPO ledger to neighbouring farmers requiring extra water. This translates the IWMI Dhundi groundwater conservation bonus into off-grid hardware reality.
+Smallholders who stay within their entitlement earn priority pre-cooling time slots in the shared 2 MT unit (the cooling energy itself exists with or without the savings; see the Strategic Proposal section). Surplus credits can be utilized for their own harvest or traded within the FPO ledger to neighbouring farmers requiring extra water. This translates the IWMI Dhundi groundwater conservation bonus into off-grid hardware reality.
 
 ---
 
@@ -274,20 +348,20 @@ $$e = \frac{\rho \cdot g \cdot H}{3.6 \times 10^6 \cdot \eta_{wire-to-water}} = 
 > All metrics below are generated directly by `impact_model.py`.  
 > Reference benchmark: **1 hectare, Nashik district, Maharashtra, tomato crop, 2 cycles/year, 5 HP Component B pump, 4.8 kWp PV array.**
 
-### 9.1 Water Conservation & Honest Attribution
+### 9.1 Reduced Irrigation Demand & Honest Attribution
 
 | Metric Parameter | Value | Derivation / Source |
 |---|:---:|---|
 | Flood Irrigation Baseline | 850 mm = **8,500 m³/season** | Unmetered flood practice, Maharashtra |
 | Conventional Drip Baseline | 600 mm = **6,000 m³/season** | Standard unmanaged micro-drip |
 | AgroStruxure Scheduled Drip | 500 mm = **5,000 m³/season** | $ET_c$ (450 mm) ÷ 0.90 drip application efficiency |
-| **Total Water Conserved (per season)** | **3,500 m³/season (41.2%)** | Difference over flood baseline |
-| **Total Water Conserved (Annual, 2 cycles)**| **7,000 m³/ha/year** | Multiplied across 2 crop cycles |
+| **Reduced Irrigation Demand (per season)** | **3,500 m³/season (41.2% reduction in modelled irrigation water application)** | Difference over flood baseline |
+| **Reduced Irrigation Demand (Annual, 2 cycles)**| **7,000 m³/ha/year** | Multiplied across 2 crop cycles |
 
 **Honest Attribution Breakdown (per season):**
 * **Hardware Shift (Flood to Drip):** Saves $2,500\text{ m}^3/\text{season}$ (29.4% saving).
 * **AgroStruxure Entitlement & Closed-Loop Control:** Saves an additional $1,000\text{ m}^3/\text{season}$ (11.8% saving).
-* **Crucial Governance Distinction:** The 7,000 m³/year is conserved *only* because Layer 3 locks the aquifer against rebound area expansion.
+* **Crucial Governance Distinction:** the 7,000 m³/year reduction in modelled irrigation water application is retained only if Layer 3 prevents area expansion (rebound). It is a modelled reduction, not measured aquifer protection.
 
 ### 9.2 Clean Energy Optimization
 
@@ -298,16 +372,16 @@ $$e = \frac{\rho \cdot g \cdot H}{3.6 \times 10^6 \cdot \eta_{wire-to-water}} = 
 | Pumping Demand (AgroStruxure) | 2,422 kWh/year | $10,000\text{ m}^3 \times 0.242\text{ kWh/m}^3$ |
 | **Pumping Energy Freed** | **1,696 kWh/year** | Clean energy liberated from pumping |
 | **Idle PV Today (flood pumping)** | **2,442 kWh/year (37%)** | 6,559 − 4,118 |
-| **Idle PV Once Water Is Right-Sized** | **4,137 kWh/year (63%)** | Idle-today + 1,696 kWh freed |
+| **Modelled Surplus Once Irrigation Is Right-Sized** | **4,137 kWh/year (63.1%)** | Idle-today + 1,696 kWh freed |
 | **Cluster Cold-Chain Energy** | **1,062 kWh/year (26% of host surplus)** | 60 batches × 17.7 kWh (4 farms × 30 t ÷ 2 MT); 266 kWh per farm |
-| **Headroom After Cooling** | **3,075 kWh/year (47% of PV)** | Reported, not claimed |
+| **Unallocated Headroom** | **3,075 kWh/year (46.9% of PV)** | Three-step balance: 6,559 PV → 2,422 pumping → 1,062 pre-cooling → 3,075 unallocated. Reported, not counted as a benefit |
 
 ### 9.3 Post-Harvest Produce Preservation
 * Baseline farm-stage loss (NABCONS 2022, tomato): **8.37%** ($2.51\text{ t/ha/year}$ on 30 t yield).
 * Residual loss with on-farm pre-cooling: **4.00%** ($1.20\text{ t/ha/year}$).
 * **Perishable Produce Preserved:** **1.31 t/ha/year**.
 * Direct Economic Value (@ conservative farm-gate ₹12/kg): **₹15,732/ha/year**.
-* Distress-Sale Avoidance (holding 2–4 days for mandi price stabilization): **₹12,000/ha/year**.
+* *Optional scenario, not in the base case:* price-timing arbitrage (holding 2–4 days for mandi price stabilisation): **₹12,000/ha/year**.
 
 ### 9.4 Carbon Abatement
 * Avoided food spoilage embodied emissions ($1.31\text{ t} \times 0.30\text{ kg CO}_2\text{e/kg}$): **0.39 t CO₂e/ha/year**.
@@ -321,8 +395,8 @@ $$e = \frac{\rho \cdot g \cdot H}{3.6 \times 10^6 \cdot \eta_{wire-to-water}} = 
 * Net Capital Cost: **₹3,09,000**.
 * After 35% MIDH / Agriculture Infrastructure Fund (AIF) subsidy: **₹2,00,850**.
 * **Capital Cost per Farm (4-farm cluster):** **₹50,212**.
-* Annual Net Benefit per Farm: ₹15,732 (spoilage) + ₹12,000 (timing) - ₹2,400 (opex) = **₹25,332/year**.
-* **Payback Period (Tier A):** **2.0 years (4 harvests at 2 cycles/yr)** post-subsidy; **3.0 years** unsubsidized.
+* Annual Net Benefit per Farm, **base case** (physical loss reduction only): ₹15,732 (1.31 t × ₹12/kg; ≈₹15,720 at the rounded 1.31 t) − ₹2,400 (opex) = **₹13,332/year**. *Optional price-timing scenario:* + ₹12,000 = ₹25,332/year.
+* **Payback Period (Tier A), base case:** **3.8 years (≈7.5 harvests at 2 cycles/yr)** post-subsidy; **5.8 years** unsubsidised. *With the optional price-timing scenario:* 2.0 years (4 harvests); 3.0 years unsubsidised.
 
 #### Tier B: FPO Aggregation Hub (20 Farms Sharing a 5 MT Facility)
 * Capital Expenditure (5 MT cold room + dedicated 4 kWp PV array): **₹12,00,000**.
@@ -338,9 +412,24 @@ $$e = \frac{\rho \cdot g \cdot H}{3.6 \times 10^6 \cdot \eta_{wire-to-water}} = 
 
 ---
 
-## 10. Bill of Materials
+## 10. ENGINEERING ARTIFACTS
 
-### 10.1 Edge Controller BOM (1,000-Unit Production Scale)
+### 10.1 Phase 1 Completed
+
+| Artifact | Detail | Status |
+|---|---|---|
+| **Code** | `research/08_IMPACT/impact_model.py`: water, energy, thermal and economics; base case and optional price-timing scenario | In this repository; runs and reconciles |
+| **Math model** | FAO-56 entitlement, 17.7 kWh per batch-day, 60 batches/yr, three-step energy balance | Arithmetic-reconciled; not field-validated |
+| **AgroSim** | FastAPI physics and Modbus engine: diurnal solar curve, pump curve, virtual ATV320 | Team-reported complete; source is not in this repository, link it before submission |
+
+### 10.2 Phase 2 Prototype
+
+| Artifact | Detail | Status |
+|---|---|---|
+| **HIL test bench** | ESP32-S3 production firmware ↔ Altivar ATV320 (or the AgroSim virtual drive) over RS485; interlocked TeSys D pair; the 5-second dead-band parameter is tuned here | Planned: Phase 2 window Oct 11 – Nov 22, 2026; no hardware yet |
+| **PCM store** | Encapsulated salt hydrate PCM per assumption A18 | Vendor datasheet and sample test |
+
+### 10.3 Edge Controller Bill of Materials (1,000-Unit Production Scale)
 
 | Component Description | Unit Cost (₹) | Engineering Selection Rationale |
 |---|:---:|---|
@@ -380,7 +469,7 @@ $$e = \frac{\rho \cdot g \cdot H}{3.6 \times 10^6 \cdot \eta_{wire-to-water}} = 
 
 ## 12. Prototype Scope & 5-Minute Demo Arc
 
-### 12.1 Phase 2 Working Deliverables
+### 12.1 Phase 2 Working Deliverables (HIL prototype built on the Phase 1 AgroSim baseline)
 1. **AgroSim Physics & Modbus Engine (FastAPI):** Diurnal solar curve with real-time cloud injection; dynamic borewell pump curve ($H_{TDH} = H_{static} + kQ^2$); virtual ATV320 exposing authentic Modbus registers (`8501`, `8502`, `3201`, `3202`, `3204`); virtual interlocked changeover with 5-second dead-band.
 2. **FPO Entitlement Ledger:** Multi-farm quota allocation, real-time flow burndown, and trade execution.
 3. **Interactive Control Console (React 18 / TypeScript / Apache ECharts):** 24-hour time scrubber, live electrical/hydraulic gauges, animated power-path topology, and instant impact audit card.
@@ -389,10 +478,10 @@ $$e = \frac{\rho \cdot g \cdot H}{3.6 \times 10^6 \cdot \eta_{wire-to-water}} = 
 ### 12.2 Five-Minute Evaluator Demonstration Arc
 * **0:00–0:45 (The Rebound Problem):** Showcase the Rajasthan 16%–39% extraction surge under PM-KUSUM.
 * **0:45–1:40 (Precision Irrigation):** Morning solar ramp (08:30 AM). VFD ramps pump above $f_{min}$ (36 Hz). Entitlement bar burns down in real time.
-* **1:40–2:30 (Safe Automated Cut-Off & Upstream Routing):** Daily volume met $\to$ VFD decelerates to 0 Hz $\to$ Flow confirms zero $\to$ Latching valve pulses shut $\to$ **5-second dead-band** $\to$ TeSys switches DC bus to Position 2 $\to$ Compressor pre-cools tomato batch at **12 °C safe setpoint**.
+* **1:40–2:30 (Safe Automated Cut-Off & Upstream Routing):** Daily volume met $\to$ VFD decelerates to 0 Hz $\to$ Flow confirms zero $\to$ Latching valve pulses shut $\to$ **controlled zero-current transition** $\to$ TeSys switches DC bus to Position 2 $\to$ Compressor pre-cools tomato batch at **12 °C safe setpoint**.
 * **2:30–3:15 (Cloud Transient Resilience):** Inject monsoon cloud cover. Pump modulates 36–50 Hz; PCM thermal buffer rides through pre-cooling dips without electrical batteries.
 * **3:15–4:00 (FPO Credit Trading):** Neighbour requests water quota. Farmer trades unused entitlement for cooling credits; cluster aquifer cap remains intact.
-* **4:00–5:00 (Quantified Proof):** Live audit card verifies 7,000 m³ water conserved, 1,062 kWh cluster cooling energy, 1.31 t produce saved, and **₹91,000 avoided PV capex**.
+* **4:00–5:00 (Quantified Proof):** Live audit card verifies the 7,000 m³ reduction in modelled irrigation water application, 1,062 kWh cluster cooling energy, 1.31 t produce saved, and **₹91,000 avoided PV capex**.
 
 ---
 
@@ -410,8 +499,8 @@ $$e = \frac{\rho \cdot g \cdot H}{3.6 \times 10^6 \cdot \eta_{wire-to-water}} = 
 | Risk Factor | Severity | Practical Mitigation |
 |---|:---:|---|
 | **Farmer Controller Bypass** | High | Tamper-evident enclosure; flow-meter pulse continuity monitoring; access to shared pre-cooling is conditional upon certified entitlement compliance. |
-| **Severe Mandi Price Collapses** | Medium | Baseline calculations rely strictly on NABCONS physical loss reduction (₹15,732/yr); distress timing gains (₹12,000/yr) are treated as secondary upside. |
-| **Extended Irrigation Overrun** | Medium | Cluster scheduling staggers irrigation across 4 farms; PCM buffer maintains cold storage holdover for 18–24 hours during overcast or extended pumping days. |
+| **Severe Mandi Price Collapses** | Medium | The base case relies strictly on NABCONS physical loss reduction (₹15,732/yr); price-timing gains (₹12,000/yr) are excluded from it and shown only as an optional scenario. |
+| **Extended Irrigation Overrun** | Medium | Cluster scheduling staggers irrigation across 4 farms; The PCM store is designed to hold the room through overcast or extended-pumping days (holdover duration to be validated on the Phase 2 hardware bench). |
 | **Deccan Lightning Strikes** | Medium | Multi-stage surge protection: DC Type-2 SPD on PV input, AC SPD, and opto-isolated RS485 communication lines. |
 
 **Scientific Falsification Criterion:** If a multi-season controlled field trial reveals that smallholders provided with pre-cooling access do not reduce net seasonal groundwater extraction relative to an unmetered control cohort, the central economic thesis is falsified.
@@ -433,9 +522,13 @@ $$e = \frac{\rho \cdot g \cdot H}{3.6 \times 10^6 \cdot \eta_{wire-to-water}} = 
 | A9 | Post-Cooling Residual Loss | 4.00% | Conservative benchmark | Conservative |
 | A10 | Farm-Gate Price | ₹12.00 / kg | Multi-year conservative farm-gate average | **High** (defines revenue) |
 | A11 | Tomato Storage Setpoint | **12.0 °C** | **USDA Handbook 66** (chilling threshold) | Design constraint |
-| A12 | Cooling Operating Days | 180 days/year | Dual harvest and storage window | Linear on kWh routed |
+| A12 | Cooling Room Capacity Window | 180 days/year | Dual harvest and storage window; capacity only. Demand is 60 batches/yr per cluster | Capacity only (does not drive kWh) |
 | A13 | PV Capital Cost | ₹35,000 / kWp | Current small-scale distributed PV rate | Linear on avoided capex |
 | A14 | Cluster Size | 4 farms | 2 MT pre-cooler daily throughput matching | Linear on cluster payback |
+| A15 | PCM Design Life and Holdover | 10 years; overnight hold | Design target. Confirm vendor rated freeze–thaw cycles and holdover | Medium |
+| A18 | PCM Specification | Encapsulated salt hydrate; 12–15 °C melt point; 190–210 kJ/kg | Design target; confirm vendor datasheet. Sizing: ≈216 kg for the 4.0 kWh overnight hold | Medium |
+| A16 | Battery Installed Cost (comparison only) | ₹10,000–20,000 per kWh | Indicative. Get quotes | Comparison only |
+| A17 | Value of Generic Use or Export (comparison only) | ₹3–5 per kWh | Indicative tariff. Confirm | Comparison only |
 
 ---
 
